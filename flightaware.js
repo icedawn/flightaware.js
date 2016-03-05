@@ -587,5 +587,44 @@ FlightAware.prototype.FleetScheduled = function(query, callback) {
     this._request("FleetScheduled", query, callback)
 };
 
+/*
+ * FlightInfo returns information about flights for a specific tail number (e.g., 
+ * N12345), or ICAO airline code with flight number (e.g., SWA2558).  
+ *
+ * The howMany argument specifies the maximum number of flights to be returned. Flight
+ * information will be returned from newest to oldest.  The oldest flights searched by 
+ * this function are about 2 weeks in the past.  
+ *
+ * When specifying an airline with flight number, wither an ICAO or IATA code may be 
+ * used to designate the airline, however andCodeshares and alternate idents are 
+ * automatically searched.  
+ *
+ * Times are in integer seconds since 1970 (UNIX epoch time), except for estimated 
+ * time enroute, which is in hours and minutes.  
+ *
+ * See FlightInfoEx for a more advanced interface.
+ *
+ * Parameters:
+ *  query
+ *  {
+ *      ident	    string	    requested tail number, or airline with flight number
+ *      howMany	    int	        determines the number of results. Must be a positive 
+ *                              integer value less than or equal to 15, unless 
+ *                              SetMaximumResultSize has been called.
+ *      offset	    int	        must be an integer value of the offset row count you 
+ *                              want the search to start at. Most requests should be 0.
+ *  }
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          int         FlightInfoStruct
+ */
+FlightAware.prototype.FlightInfo = function(query, callback) {
+    this._request("FlightInfo", query, callback)
+};
 
 module.exports = FlightAware;

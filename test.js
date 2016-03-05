@@ -108,3 +108,10 @@ client.FleetScheduled({
     if(verbose) console.log('err, result = ', err, result);
 });
 
+client.FlightInfo({ 
+    ident: "N415PW", 
+    howMany: 1
+}, function(err, result) {
+    if(1) console.log('err, result = ', err, result);
+});
+
