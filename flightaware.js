@@ -207,6 +207,7 @@ FlightAware.prototype.AirlineInfo = function(airlineCode, callback) {
  *      destination     string  airport code of destination
  *      reportType      int     type of report to obtain (see list of values above)
  *  }
+ *  callback        function    async completion callback
  *
  * Returns:
  *  undefined
@@ -235,9 +236,10 @@ FlightAware.prototype.AirlineInsight = function(query, callback) {
  * timezone libraries.
  *
  * Parameters:
- *
  *  airportCode	    string	    the ICAO airport ID (e.g., KLAX, KSFO, KIAH, KHOU, 
  *                              KJFK, KEWR, KORD, KATL, etc.)
+ *  callback        function    async completion callback
+ *
  * Returns:
  *  undefined
  *
@@ -249,6 +251,143 @@ FlightAware.prototype.AirportInfo = function(airportCode, callback) {
     var query = { 'airportCode' : airportCode };
     this._request("AirportInfo", query, callback)
 };
+
+/*
+ * AllAirlines returns the ICAO identifiers of all known commercial airlines/carriers.
+ * See AirlineInfo to retrieve additional information about any of the identifiers 
+ * returned.
+ *
+ * Parameters:
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          object      ArrayOfString
+ */
+FlightAware.prototype.AllAirlines = function(callback) {
+    this._request("AllAirlines", {}, callback)
+};
+
+/*
+ * AllAirports returns the ICAO identifiers of all known airports. For airports that 
+ * do not have an ICAO identifier, the FAA LID identifier will be used.
+ * See AirportInfo to retrieve additional information about any of the identifiers 
+ * returned.
+ *
+ * Parameters:
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          object      ArrayOfString
+ */
+FlightAware.prototype.AllAirports = function(callback) {
+    this._request("AllAirports", {}, callback)
+};
+
+/*
+ * Arrived returns information about flights that have recently arrived for the 
+ * specified airport and maximum number of flights to be returned. Flights are 
+ * returned from most to least recent. Only flights that arrived within the last 
+ * 24 hours are considered.  
+ *
+ * Times returned are seconds since 1970 (UNIX epoch seconds).  
+ *
+ * See also Departed, Enroute, and Scheduled for other airport tracking functionality.
+
+ *
+ * Parameters:
+ *  query
+ *  {
+ *      airport	    string	    the ICAO airport ID (e.g., KLAX, KSFO, KIAH, KHOU, KJFK,
+ *                              KEWR, KORD, KATL, etc.)
+ *      howMany	    int	        determines the number of results. Must be a positive 
+ *                              integer value less than or equal to 15, unless 
+ *                              SetMaximumResultSize has been called.
+ *      filter	    string	    can be "ga" to show only general aviation traffic, 
+ *                              "airline" to only show airline traffic, or null/empty 
+ *                              to show all raffic.
+ *      offset	    int	        must be an integer value of the offset row count you 
+ *                              want the search to start at. Most requests should be 0.
+ *  }
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          object      ArrayOfArrivalStruct
+ */
+FlightAware.prototype.Arrived = function(query, callback) {
+    this._request("Arrived", query, callback)
+};
+
+/*
+ * Given an aircraft identification, returns 1 if the aircraft is blocked from public 
+ * tracking, 0 if it is not.
+ *
+ * Parameters:
+ *  ident           string      requested tail number
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          int         1=blocked, 0=not blocked
+ */
+FlightAware.prototype.BlockIdentCheck = function(ident, callback) {
+    var query = { ident : ident };
+    this._request("BlockIdentCheck", query, callback)
+};
+
+/*
+ * Given an airport, CountAirportOperations returns integer values on the number 
+ * of aircraft scheduled or actually en route or departing from the airport. Scheduled 
+ * arrival is a non-airborne flight that is scheduled to the airport in question.
+ *
+ * Parameters:
+ *  airport         string      airport code
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          object      CountAirportOperationsStruct
+ */
+FlightAware.prototype.CountAirportOperations = function(airport, callback) {
+    var query = { airport : airport };
+    this._request("CountAirportOperations", query, callback)
+};
+
+/*
+ * CountAllEnrouteAirlineOperations returns an array of airlines and how many flights 
+ * each currently has enroute.
+ *
+ * Parameters:
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          int         ArryOfCountAirportOperationsStruct
+ */
+FlightAware.prototype.CountAllEnrouteAirlineOperations = function(callback) {
+    this._request("CountAllEnrouteAirlineOperations", {}, callback)
+};
+
 
 
 module.exports = FlightAware;
