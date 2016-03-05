@@ -388,6 +388,72 @@ FlightAware.prototype.CountAllEnrouteAirlineOperations = function(callback) {
     this._request("CountAllEnrouteAirlineOperations", {}, callback)
 };
 
+/*
+ * Given a flight identifier (faFlightID) of a past, current, or future flight, 
+ * DecodeFlightRoute returns a "cracked" list of noteworthy navigation points along 
+ * the planned flight route. The list represents the originally planned route of 
+ * travel, which may differ slightly from the actual flight path flown. 
+ *
+ * The returned list will include the name, type, latitude, and longitude of each 
+ * point. Additional reporting points along the route may be automatically included 
+ * in the returned list. Not all flight routes can be successfully decoded by this 
+ * function, particularly if the flight is not entirely within the continental U.S. 
+ * airspace, since this function only has access to navaids within that area. To 
+ * obtain the faFlightID, you can use a function such as GetFlightID, FlightInfoEx, 
+ * or InFlightInfo.
+ *
+ * Parameters:
+ *  faFlightID      string      unique identifier assigned by FlightAware for this 
+ *                              flight (or use "ident@departureTime")
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          int         ArrayOfFlightRouteStruct
+ */
+FlightAware.prototype.DecodeFlightRoute = function(faFlightID, callback) {
+    var query = { faFlightID : faFlightID };
+    this._request("DecodeFlightRoute", query, callback)
+};
+
+/*
+ * Given an origin airport, destination airport, and a route between them, DecodeRoute 
+ * returns a "cracked" list of noteworthy navigation points along the planned flight 
+ * route. The list represents the originally planned route of travel, which may differ 
+ * slightly from the actual flight path flown. The returned list will include the name,
+ * type, latitude, and longitude of each point. Additional reporting points along the 
+ * route may be automatically included in the returned list.  Not all flight routes can 
+ * be successfully decoded by this function, particularly if the flight is not entirely 
+ * within the continental U.S. airspace, since this function only has access to navaids 
+ * within that area.
+ *
+ * For an alternate version of this function that lets you specify an existing flight 
+ * identifier, see DecodeFlightRoute.
+ *
+ * Parameters:
+ *  query
+ *  {
+ *      origin          string  airport code of origin
+ *      route           string  space separated list of intersections and/or VORs 
+ *                              along the route
+ *      destination     string  airport code of destination
+ *  }
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          int         ArrayOfFlightRouteStruct
+ */
+FlightAware.prototype.DecodeRoute = function(query, callback) {
+    this._request("DecodeRoute", query, callback)
+};
+
 
 
 module.exports = FlightAware;

@@ -63,6 +63,18 @@ client.CountAirportOperations("KSFO", function(err, result) {
 });
 
 client.CountAllEnrouteAirlineOperations(function(err, result) {
+    // console.log('err, result = ', err, result);
+});
+
+client.DecodeFlightRoute('N415PW@1442008560', function(err, result) {
+    console.log('err, result = ', err, result);
+});
+
+client.DecodeRoute({ 
+    origin: 'KSQL', 
+    route: 'SJC V334 SAC SWR', 
+    destination: 'KTRK'
+}, function(err, result) {
     console.log('err, result = ', err, result);
 });
 
