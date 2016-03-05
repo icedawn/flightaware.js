@@ -87,11 +87,24 @@ client.DeleteAlert('1', function(err, result) {
     if(verbose) console.log('err, result = ', err, result);
 });
 
-client.Departed({ airport: "KSFO", howMany: 1 }, function(err, result) {
+client.Departed({ 
+    airport: "KSFO", 
+    howMany: 1
+}, function(err, result) {
     if(verbose) console.log('err, result = ', err, result);
 });
 
-client.FleetArrived({ fleet: "URF", howMany: 1 }, function(err, result) {
+client.FleetArrived({ 
+    fleet: "URF", 
+    howMany: 1 
+}, function(err, result) {
     if(verbose) console.log('err, result = ', err, result);
+});
+
+client.FleetScheduled({ 
+    fleet: "URF", 
+    howMany: 1 
+}, function(err, result) {
+    if(1) console.log('err, result = ', err, result);
 });
 
