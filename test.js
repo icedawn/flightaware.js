@@ -105,6 +105,6 @@ client.FleetScheduled({
     fleet: "URF", 
     howMany: 1 
 }, function(err, result) {
-    if(1) console.log('err, result = ', err, result);
+    if(verbose) console.log('err, result = ', err, result);
 });
 
