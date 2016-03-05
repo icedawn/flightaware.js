@@ -454,6 +454,101 @@ FlightAware.prototype.DecodeRoute = function(query, callback) {
     this._request("DecodeRoute", query, callback)
 };
 
+/*
+ * DeleteAlert deletes a FlightXML flight alert.  
+ *
+ * The other methods SetAlert, GetAlerts, and RegisterAlertEndpoint can be used to 
+ * manage FlightXML flight alerts.
+ *
+ * Parameters:
+ *  alert_id        int         alert_id to delete
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          int         1=success
+ */
+FlightAware.prototype.DeleteAlert = function(alertId, callback) {
+    if(alertId) {
+        var query = { 'alert_id' : alertId };
+        this._request("DeleteAlert", query, callback)
+    }
+};
+
+/*
+ * Departed returns information about already departed flights for a specified airport 
+ * and maximum number of flights to be returned. Departed flights are returned in order
+ * from most recently to least recently departed.  Only flights that have departed within
+ * the last 24 hours are considered.  
+ *
+ * Times returned are seconds since 1970 (UNIX epoch seconds).  
+ *
+ * See also Arrived, Enroute, and Scheduled for other airport tracking functionality.
+ *
+ * Parameters:
+ *  query
+ *  {
+ *      airport	    string	    the ICAO airport ID (e.g., KLAX, KSFO, KIAH, KHOU, KJFK,
+ *                              KEWR, KORD, KATL, etc.)
+ *      howMany	    int	        determines the number of results. Must be a positive 
+ *                              integer value less than or equal to 15, unless 
+ *                              SetMaximumResultSize has been called.
+ *      filter	    string	    can be "ga" to show only general aviation traffic, 
+ *                              "airline" to only show airline traffic, or null/empty 
+ *                              to show all raffic.
+ *      offset	    int	        must be an integer value of the offset row count you 
+ *                              want the search to start at. Most requests should be 0.
+ *  }
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          int         DepartureStruct
+ */
+FlightAware.prototype.Departed = function(query, callback) {
+    this._request("Departed", query, callback)
+};
+
+/*
+ * FleetArrived returns information about recently arrived flights belonging to an 
+ * aircraft fleet. Only flights that have arrived within the last 24 hours are 
+ * considered. Codeshares and alternate idents are NOT considered.  
+ *
+ * The next_offset value returned advises an application of the next offset to use 
+ * (if more data is available).  
+ *
+ * Times returned are seconds since 1970 (UNIX epoch seconds).  
+ *
+ * See also FleetScheduled for other fleet tracking functionality.
+ *
+ * Parameters:
+ *  query
+ *  {
+ *      fleet	    string	    fleet identifier (e.g. 'URF')
+ *      howMany	    int	        determines the number of results. Must be a positive 
+ *                              integer value less than or equal to 15, unless 
+ *                              SetMaximumResultSize has been called.
+ *      offset	    int	        must be an integer value of the offset row count you 
+ *                              want the search to start at. Most requests should be 0.
+ *  }
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          int         DepartureStruct
+ */
+FlightAware.prototype.FleetArrived = function(query, callback) {
+    this._request("FleetArrived", query, callback)
+};
 
 
 module.exports = FlightAware;
