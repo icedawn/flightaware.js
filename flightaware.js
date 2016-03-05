@@ -84,8 +84,8 @@ FlightAware.prototype._request = function(method, data, callback) {
  *  result          object      AircraftTypeStruct
  */
 FlightAware.prototype.AircraftType = function(aircraftType, callback) {
-    var data = { "type" : aircraftType };
-    this._request("AircraftType", data, callback)
+    var query = { "type" : aircraftType };
+    this._request("AircraftType", query, callback)
 };
 
 /*
@@ -108,8 +108,8 @@ FlightAware.prototype.AircraftType = function(aircraftType, callback) {
  *  result          object      AirlineFlightInfoStruct
  */
 FlightAware.prototype.AirlineFlightInfo = function(faFlightID, callback) {
-    var data = { "faFlightID" : faFlightID };
-    this._request("AirlineFlightInfo", data, callback)
+    var query = { "faFlightID" : faFlightID };
+    this._request("AirlineFlightInfo", query, callback)
 };
 
 /*
@@ -179,8 +179,8 @@ FlightAware.prototype.AirlineFlightSchedules = function(query, callback) {
  *  result          object      AirlineInfoStruct
  */
 FlightAware.prototype.AirlineInfo = function(airlineCode, callback) {
-    var data = { "airlineCode" : airlineCode };
-    this._request("AirlineInfo", data, callback)
+    var query = { "airlineCode" : airlineCode };
+    this._request("AirlineInfo", query, callback)
 };
 
 /*
@@ -218,6 +218,36 @@ FlightAware.prototype.AirlineInfo = function(airlineCode, callback) {
 FlightAware.prototype.AirlineInsight = function(query, callback) {
     if ( !('reportType' in query)) query.reportType = 2;
     this._request("AirlineInsight", query, callback)
+};
+
+/*
+ * AirportInfo returns information about an airport given an ICAO airport code such 
+ * as KLAX, KSFO, KORD, KIAH, O07, etc.  Data returned includes name (Houston 
+ * Intercontinental Airport), location (typically city and state), latitude and 
+ * longitude, and timezone (:America/Chicago).  
+ *
+ * The returned timezone is specified in a format that is compatible with the official
+ * IANA zoneinfo database and can be used to convert the timestamps returned by all 
+ * other functions into localtimes.  Support for timestamp conversion using zoneinfo 
+ * identifiers is available natively or through third-party libraries for most 
+ * programming languages. In some cases, the leading colon (":") character may need to 
+ * be removed from the timezone identifier in order for it to be recognized by some 
+ * timezone libraries.
+ *
+ * Parameters:
+ *
+ *  airportCode	    string	    the ICAO airport ID (e.g., KLAX, KSFO, KIAH, KHOU, 
+ *                              KJFK, KEWR, KORD, KATL, etc.)
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          object      AirportInfoStruct
+ */
+FlightAware.prototype.AirportInfo = function(airportCode, callback) {
+    var query = { 'airportCode' : airportCode };
+    this._request("AirportInfo", query, callback)
 };
 
 

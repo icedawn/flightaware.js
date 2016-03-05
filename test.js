@@ -36,4 +36,7 @@ client.AirlineInsight({ origin: 'SJC', destination: 'LAX' }, function(err, resul
     }
 });
 
+client.AirportInfo('SFO', function(err, result) {
+    console.log('err, result = ', err, result);
+});
 
