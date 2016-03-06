@@ -122,3 +122,14 @@ client.FlightInfoEx({
     if(verbose) console.log('err, result = ', err, result);
 });
 
+client.GetAlerts(function(err, result) {
+    if(verbose) console.log('err, result = ', err, result);
+});
+
+client.GetFlightID({ 
+    ident: 'N415PW', 
+    departureTime: '1442008560' 
+}, function(err, result) {
+    if(verbose) console.log('err, result = ', err, result);
+});
+

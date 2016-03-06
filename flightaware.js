@@ -628,22 +628,6 @@ FlightAware.prototype.FlightInfo = function(query, callback) {
 };
 
 /*
- * FlightInfo returns information about flights for a specific tail number (e.g., 
- * N12345), or ICAO airline code with flight number (e.g., SWA2558).  
- *
- * The howMany argument specifies the maximum number of flights to be returned. Flight
- * information will be returned from newest to oldest.  The oldest flights searched by 
- * this function are about 2 weeks in the past.  
- *
- * When specifying an airline with flight number, wither an ICAO or IATA code may be 
- * used to designate the airline, however andCodeshares and alternate idents are 
- * automatically searched.  
- *
- * Times are in integer seconds since 1970 (UNIX epoch time), except for estimated 
- * time enroute, which is in hours and minutes.  
- *
- * See FlightInfoEx for a more advanced interface.
- *
  * FlightInfoEx returns information about flights for a specific tail number (e.g., 
  * N12345), or an ident (typically an ICAO airline with flight number, e.g., SWA2558),
  * or a FlightAware-assigned unique flight identifier (e.g. faFlightID returned by 
@@ -684,6 +668,61 @@ FlightAware.prototype.FlightInfo = function(query, callback) {
  */
 FlightAware.prototype.FlightInfoEx = function(query, callback) {
     this._request("FlightInfoEx", query, callback)
+};
+
+/*
+ * GetAlerts retrieves all of the FlightXML flight alerts that are currently scheduled 
+ * for the user.  
+ *
+ * The other methods SetAlert, DeleteAlert, and RegisterAlertEndpoint can be used to 
+ * manage FlightXML flight alerts.  
+ *
+ * Note: If other alerts have been defined by the user on the FlightAware website or 
+ * mobile app, they will also be included in the returned listing.
+ *
+ * Parameters:
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          int         FlightAlertListing
+ */
+FlightAware.prototype.GetAlerts = function(callback) {
+    this._request("GetAlerts", {}, callback)
+};
+
+/*
+ * GetFlightID looks up the "faFlightID" for a given ident and departure time. This 
+ * value is a unique identifier assigned by FlightAware as a way to permanently 
+ * identify a flight. The specified departure time must exactly match either the actual
+ * or scheduled departure time of the flight. The departureTime is specified as integer 
+ * seconds since 1970 (UNIX epoch time).  
+ *
+ * If more than one flight corresponds to the specified ident and departure time, then 
+ * only the first matching faFlightID is returned. Codeshares and alternate idents are 
+ * automatically searched.
+ *
+ * Parameters:
+ *  query
+ *  {
+ *      ident	        string  requested tail number
+ *      departureTime   int     time and date of the desired flight, UNIX epoch seconds 
+ *                              since 1970
+ *  }
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          string      returned faFlightID
+ */
+FlightAware.prototype.GetFlightID = function(query, callback) {
+    this._request("GetFlightID", query, callback)
 };
 
 
