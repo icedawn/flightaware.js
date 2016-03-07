@@ -725,6 +725,262 @@ FlightAware.prototype.GetFlightID = function(query, callback) {
     this._request("GetFlightID", query, callback)
 };
 
+/*
+ * GetHistoricalTrack looks up a past flight's track log by its unique identifier. To 
+ * obtain the faFlightID, you can use a function such as GetFlightID, FlightInfoEx, or 
+ * InFlightInfo.  
+ *
+ * This function returns an array of positions, with each including the timestamp, 
+ * longitude, latitude, groundspeed, altitude, altitudestatus, updatetype, and 
+ * altitudechange. Altitude is in hundreds of feet or Flight Level where appropriate, 
+ * see our FAQ about flight levels. Also included is altitude status, update type, and 
+ * altitude change.  
+ * 
+ * Altitude status is 'C' when the flight is more than 200 feet away from its 
+ * ATC-assigned altitude. (For example, the aircraft is transitioning to its assigned 
+ * altitude.) Altitude change is 'C' if the aircraft is climbing (compared to the 
+ * previous position reported), 'D' for descending, and empty if it is level. This 
+ * happens for VFR flights with flight following, among other things. Timestamp is 
+ * integer seconds since 1970 (UNIX epoch time).  
+ *
+ * Use the GetLastTrack function to look up just the most recent flight rather than 
+ * a specific historical one.
+ *
+ * Parameters:
+ *  faFlightID      string      unique identifier assigned by FlightAware for the 
+ *                              desired flight (or use "ident@departureTime")
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          string      ArrayOfTrackStruct
+ */
+FlightAware.prototype.GetHistoricalTrack = function(faFlightID, callback) {
+    var query = { faFlightID : faFlightID };
+    this._request("GetHistoricalTrack", query, callback)
+};
+
+/*
+ * GetLastTrack looks up a flight's track log by specific tail number (e.g., N12345) or 
+ * ICAO airline and flight number (e.g., SWA2558). It returns the track log from the 
+ * current IFR flight or, if the aircraft is not airborne, the most recent IFR flight.
+ * It returns an array of positions, with each including the timestamp, longitude, 
+ * latitude, groundspeed, altitude, altitudestatus, updatetype, and altitudechange. 
+ * Altitude is in hundreds of feet or Flight Level where appropriate, see our FAQ about 
+ * flight levels. Also included altitude status, update type, and altitude change.
+ *
+ * Altitude status is 'C' when the flight is more than 200 feet away from its 
+ * ATC-assigned altitude. (For example, the aircraft is transitioning to its assigned 
+ * altitude.) Altitude change is 'C' if the aircraft is climbing (compared to the 
+ * previous position reported), 'D' for descending, and empty if it is level. This 
+ * happens for VFR flights with flight following, among other things. Timestamp is 
+ * integer seconds since 1970 (UNIX epoch time).
+ * 
+ * This function only returns tracks for recent flights within approximately the last 
+ * 24 hours. Use the GetHistoricalTrack function to look up a specific past flight 
+ * rather than just the most recent one. Codeshares and alternate idents are 
+ * automatically searched.
+ *
+ * Parameters:
+ *  ident           string      requested tail number
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          string      ArrayOfTrackStruct
+ */
+FlightAware.prototype.GetLastTrack = function(ident, callback) {
+    var query = { ident : ident };
+    this._request("GetLastTrack", query, callback)
+};
+
+/*
+ * InboundFlightInfo returns information about the flight being served by the same 
+ * aircraft that will service a future flight. To obtain the faFlightID, you can use 
+ * a function such as GetFlightID, FlightInfoEx, or InFlightInfo.  
+ *
+ * The inbound flight can only be determined with accuracy for some commercial airlines.
+ * If the inbound flight cannot be determined, an error will be returned.  
+ *
+ * Times are in integer seconds since 1970 (UNIX epoch time), except for estimated time 
+ * enroute, which is in hours and minutes.
+ *
+ * Parameters:
+ *  faFlightID      string      unique identifier assigned by FlightAware for the 
+ *                              desired flight (or use "ident@departureTime")
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          string      FlightExStruct
+ */
+FlightAware.prototype.InboundFlightInfo = function(faFlightID, callback) {
+    var query = { faFlightID : faFlightID };
+    this._request("InboundFlightInfo", query, callback)
+};
+
+/*
+ * InFlightInfo looks up a specific tail number (e.g., N12345) or ICAO airline and 
+ * flight number (e.g., SWA2558) and returns current position/direction/speed 
+ * information. It is only useful for currently airborne flights within approximately 
+ * the last 24 hours. Codeshares and alternate idents are automatically searched.
+ *
+ * Parameters:
+ *  ident           string      requested tail number
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          string      InFlightAircraftStruct
+ */
+FlightAware.prototype.InFlightInfo = function(ident, callback) {
+    var query = { ident : ident };
+    this._request("InFlightInfo", query, callback)
+};
+
+/*
+ * Given two latitudes and longitudes, lat1 lon1 lat2 and lon2, respectively, determine 
+ * the great circle distance between those positions in miles. The returned distance is 
+ * rounded to the nearest whole mile.
+ *
+ * Parameters:
+ *  lat1            float       Latitude of point 1
+ *  lon1            float       Longitude of point 1
+ *  lat2            float       Latitude of point 2
+ *  lon2            float       Longitude of point 2
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          int         returned distance
+ */
+FlightAware.prototype.LatLongsToDistance = function(query, callback) {
+    this._request("LatLongsToDistance", query, callback)
+};
+
+/*
+ * Given two latitudes and longitudes, lat1 lon1 lat2 and lon2, respectively, calculate 
+ * and return the initial compass heading (where 360 is North) from position one to 
+ * position two. Quite accurate for relatively short distances but since it assumes the 
+ * earth is a sphere rather than on irregular oblate sphereoid may be inaccurate for 
+ * flights around a good chunk of the world, etc.
+ *
+ * Parameters:
+ *  lat1            float       Latitude of point 1
+ *  lon1            float       Longitude of point 1
+ *  lat2            float       Latitude of point 2
+ *  lon2            float       Longitude of point 2
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          int         returned heading
+ */
+FlightAware.prototype.LatLongsToHeading = function(query, callback) {
+    this._request("LatLongsToHeading", query, callback)
+};
+
+/*
+ * This function will return a base64 encoded GIF or PNG image (with the height and 
+ * width as specified in pixels) of the current flight of a specified ident. If the 
+ * aircraft is not currently in the air, then a blank image may be returned. Codeshares 
+ * and alternate idents are automatically searched.  
+ *
+ * See MapFlightEx for a more advanced interface with historical flight capabilities.
+ *
+ * Parameters:
+ *  ident           string      requested tail number
+ *  mapHeight       int         height of requested image, in pixels
+ *  mapWidth        int         width of requested image, in pixels
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          string      returned image data
+ */
+FlightAware.prototype.MapFlight = function(query, callback) {
+    this._request("MapFlight", query, callback)
+};
+
+/*
+ * This function will return a base64 encoded GIF or PNG image (with the height and 
+ * width as specified in pixels) of a specific flight. The flight may be a current or 
+ * historical flight, but it must be specified using the unique FlightAware-assigned 
+ * identifier for the desired flight. To obtain the faFlightID, you can use a function 
+ * such as GetFlightID, FlightInfoEx, or InFlightInfo.  
+ *
+ * The layer_on and layer_off arguments are specify what map features to include or 
+ * exclude. The available layers and its default mode is shown below: 
+ *
+ *      "US Cities" (Default: off)
+ *      "european country boundaries" (Default: off)
+ *      "asia country boundaries" (Default: off)
+ *      "country boundaries" (Default: on)
+ *      "US state boundaries" (Default: on)
+ *      "water" (Default: on)
+ *      "US urban areas" (Default: off)
+ *      "US major roads" (Default: on)
+ *      "radar" (Default: on)
+ *      "track" (Default: on)
+ *      "flights" (Default: on)
+ *      "major airports" (Default: on)
+ *      "airports" (Default: on)
+ *
+ * See MapFlight for a simpler interface.
+ *
+ * Parameters:
+ *  faFlightID              string      unique identifier assigned by FlightAware for the 
+ *                                      desired flight (or use "ident@departureTime")
+ *  mapHeight               int         height of requested image, in pixels
+ *  mapWidth                int         width of requested image, in pixels
+ *  layer_on                string()    optional list of map layer names to enable
+ *  layer_off               string()    optional list of map layer names to disable
+ *  show_data_blocks        bool        if true, a textual caption of the ident, type, 
+ *                                      heading, altitude, origin, and destination will
+ *                                      be displayed below the flight position.
+ *  show_airports           bool        if true, show the origin/destination airports as 
+ *                                      dots with textual labels.
+ *  airports_expand_view    bool        if true, force zoom area to ensure 
+ *                                      origin/destination airports are visible. 
+ *                                      show_airports must also be true to use this 
+ *                                      feature.
+ * latlon_box               float()     optionally specify the zoom area. if specified, 
+ *                                      should be a list of 4 elements (hilat, lowlon, 
+ *                                      lowlat, hilon), otherwise an automatic zoom will 
+ *                                      be used.
+ *  callback                function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          string      returned image data
+ */
+FlightAware.prototype.MapFlightEx = function(query, callback) {
+    this._request("MapFlightEx", query, callback)
+};
 
 
 module.exports = FlightAware;
