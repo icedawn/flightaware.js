@@ -230,16 +230,16 @@ client.Scheduled({
     if(verbose) console.log('err, result = ', err, result);
 });
 
-queries = [
+var searchQueries = [
     { "type" : "B77*" },
     { "belowAltitude" : 100, "aboveGroundspeed" : 200 },
     { "destination" : "KLAX", "prefix" : "H" },
     { "idents" : "UAL*", "type" : "B73*" },
 ];
 
-for(var i in queries) {
+for(var i in searchQueries) {
     client.Search({
-        parameters: queries[i],
+        parameters: searchQueries[i],
         howMany: 1,
     }, function(err, result) {
         if(verbose) console.log('err, result = ', err, result);
@@ -247,6 +247,54 @@ for(var i in queries) {
 }
 
 client.Search({
+    query: '-destination KLAX -prefix H',
+    howMany: 1,
+}, function(err, result) {
+    if(verbose) console.log('err, result = ', err, result);
+});
+
+var inFlightQueries = [
+    [ "{< alt 100} {> gs 200}", "All aircraft below ten-thousand feet with a groundspeed over 200 kts" ],
+    [ "{match aircraftType B77*}", "All in-air Boeing 777s" ],
+    [ "{= dest KLAX} {= prefix H}", "All aircraft heading to Los Angeles International Airport (LAX) that are \"heavy\" aircraft" ],
+    [ "{match ident UAL*} {match aircraftType B73*}", "All United Airlines flights in Boeing 737s" ],
+    [ "{true lifeguard}", "All \"lifeguard\" rescue flights" ],
+    [ "{in orig {KLAX KBUR KSNA KLGB KVNY KSMO KLGB KONT}} {in dest {KJFK KEWR KLGA KTEB KHPN}}", "All flights between Los Angeles area and New York area" ],
+    [ "{range lat 36.897669 40.897669} {range lon -79.03655 -75.03655}", "All flights with a last reported position +/- 2 degrees of the Whitehouse" ],
+    [ "{> lastPositionTime 1278610758} {true inAir} {!= physClass P} {> circles 3}", "All flights that have a reported position after a specified epoch time, are still in the air, are not piston class, and have made several circular flight patterns (potentially in distress)" ],
+];
+
+for(var i in inFlightQueries) {
+    var query = inFlightQueries[i][0];
+    client.SearchBirdseyeInFlight({
+        query: query,
+        howMany: 1,
+    }, function(err, result) {
+        if(verbose) console.log('err, result = ', err, result);
+    });
+}
+
+var positionQueries = [
+    [ "{< alt 100} {> gs 200}", "All flight positions below ten-thousand feet with a groundspeed over 200 kts" ],
+    [ "{match fp ASA*}", "All Alaska Airlines flight positions" ],
+    [ "{match fp ASA*} {> lat 45}", "All Alaska Airlines flight positions north of the 45th parallel" ],
+    [ "{range lat 36.897669 40.897669} {range lon -79.03655 -75.03655}", "All flight positions +/- 2 degrees of the lat/lon of the Whitehouse" ],
+    [ "{= fp N415PW-1442008613-adhoc-0}", "All flight positions for a specific flight identifier (faFlightID)" ],
+];
+
+for(var i in positionQueries) {
+    var query = positionQueries[i][0];
+    client.SearchBirdseyePositions({
+        query: query,
+        uniqueFlights: true,
+        howMany: 1,
+    }, function(err, result) {
+        if(verbose) console.log('err, result = ', err, result);
+    });
+}
+
+
+client.SearchCount({
     query: '-destination KLAX -prefix H',
     howMany: 1,
 }, function(err, result) {
