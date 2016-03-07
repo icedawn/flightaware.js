@@ -382,7 +382,7 @@ FlightAware.prototype.CountAirportOperations = function(airport, callback) {
  *
  * Async callback:  callback(err, result)
  *  err             object      undefined or error information
- *  result          int         ArryOfCountAirportOperationsStruct
+ *  result          object      ArrayOfCountAirportOperationsStruct
  */
 FlightAware.prototype.CountAllEnrouteAirlineOperations = function(callback) {
     this._request("CountAllEnrouteAirlineOperations", {}, callback)
@@ -412,7 +412,7 @@ FlightAware.prototype.CountAllEnrouteAirlineOperations = function(callback) {
  *
  * Async callback:  callback(err, result)
  *  err             object      undefined or error information
- *  result          int         ArrayOfFlightRouteStruct
+ *  result          object      ArrayOfFlightRouteStruct
  */
 FlightAware.prototype.DecodeFlightRoute = function(faFlightID, callback) {
     var query = { faFlightID : faFlightID };
@@ -448,7 +448,7 @@ FlightAware.prototype.DecodeFlightRoute = function(faFlightID, callback) {
  *
  * Async callback:  callback(err, result)
  *  err             object      undefined or error information
- *  result          int         ArrayOfFlightRouteStruct
+ *  result          object      ArrayOfFlightRouteStruct
  */
 FlightAware.prototype.DecodeRoute = function(query, callback) {
     this._request("DecodeRoute", query, callback)
@@ -509,7 +509,7 @@ FlightAware.prototype.DeleteAlert = function(alertId, callback) {
  *
  * Async callback:  callback(err, result)
  *  err             object      undefined or error information
- *  result          int         DepartureStruct
+ *  result          object      DepartureStruct
  */
 FlightAware.prototype.Departed = function(query, callback) {
     this._request("Departed", query, callback)
@@ -544,7 +544,7 @@ FlightAware.prototype.Departed = function(query, callback) {
  *
  * Async callback:  callback(err, result)
  *  err             object      undefined or error information
- *  result          int         ArrivalStruct
+ *  result          object      ArrivalStruct
  */
 FlightAware.prototype.FleetArrived = function(query, callback) {
     this._request("FleetArrived", query, callback)
@@ -581,7 +581,7 @@ FlightAware.prototype.FleetArrived = function(query, callback) {
  *
  * Async callback:  callback(err, result)
  *  err             object      undefined or error information
- *  result          int         ScheduledStruct
+ *  result          object      ScheduledStruct
  */
 FlightAware.prototype.FleetScheduled = function(query, callback) {
     this._request("FleetScheduled", query, callback)
@@ -621,7 +621,7 @@ FlightAware.prototype.FleetScheduled = function(query, callback) {
  *
  * Async callback:  callback(err, result)
  *  err             object      undefined or error information
- *  result          int         FlightInfoStruct
+ *  result          object      FlightInfoStruct
  */
 FlightAware.prototype.FlightInfo = function(query, callback) {
     this._request("FlightInfo", query, callback)
@@ -664,7 +664,7 @@ FlightAware.prototype.FlightInfo = function(query, callback) {
  *
  * Async callback:  callback(err, result)
  *  err             object      undefined or error information
- *  result          int         FlightInfoExStruct
+ *  result          object      FlightInfoExStruct
  */
 FlightAware.prototype.FlightInfoEx = function(query, callback) {
     this._request("FlightInfoEx", query, callback)
@@ -688,7 +688,7 @@ FlightAware.prototype.FlightInfoEx = function(query, callback) {
  *
  * Async callback:  callback(err, result)
  *  err             object      undefined or error information
- *  result          int         FlightAlertListing
+ *  result          object      FlightAlertListing
  */
 FlightAware.prototype.GetAlerts = function(callback) {
     this._request("GetAlerts", {}, callback)
@@ -708,11 +708,11 @@ FlightAware.prototype.GetAlerts = function(callback) {
  * Parameters:
  *  query
  *  {
- *      ident	        string  requested tail number
- *      departureTime   int     time and date of the desired flight, UNIX epoch seconds 
- *                              since 1970
+ *      ident	        string      requested tail number
+ *      departureTime   int         time and date of the desired flight, UNIX epoch 
+ *                                  seconds since 1970
  *  }
- *  callback        function    async completion callback
+ *  callback            function    async completion callback
  *
  * Returns:
  *  undefined
@@ -756,7 +756,7 @@ FlightAware.prototype.GetFlightID = function(query, callback) {
  *
  * Async callback:  callback(err, result)
  *  err             object      undefined or error information
- *  result          string      ArrayOfTrackStruct
+ *  result          object      ArrayOfTrackStruct
  */
 FlightAware.prototype.GetHistoricalTrack = function(faFlightID, callback) {
     var query = { faFlightID : faFlightID };
@@ -793,7 +793,7 @@ FlightAware.prototype.GetHistoricalTrack = function(faFlightID, callback) {
  *
  * Async callback:  callback(err, result)
  *  err             object      undefined or error information
- *  result          string      ArrayOfTrackStruct
+ *  result          object      ArrayOfTrackStruct
  */
 FlightAware.prototype.GetLastTrack = function(ident, callback) {
     var query = { ident : ident };
@@ -821,7 +821,7 @@ FlightAware.prototype.GetLastTrack = function(ident, callback) {
  *
  * Async callback:  callback(err, result)
  *  err             object      undefined or error information
- *  result          string      FlightExStruct
+ *  result          object      FlightExStruct
  */
 FlightAware.prototype.InboundFlightInfo = function(faFlightID, callback) {
     var query = { faFlightID : faFlightID };
@@ -843,7 +843,7 @@ FlightAware.prototype.InboundFlightInfo = function(faFlightID, callback) {
  *
  * Async callback:  callback(err, result)
  *  err             object      undefined or error information
- *  result          string      InFlightAircraftStruct
+ *  result          object      InFlightAircraftStruct
  */
 FlightAware.prototype.InFlightInfo = function(ident, callback) {
     var query = { ident : ident };
@@ -856,11 +856,14 @@ FlightAware.prototype.InFlightInfo = function(ident, callback) {
  * rounded to the nearest whole mile.
  *
  * Parameters:
- *  lat1            float       Latitude of point 1
- *  lon1            float       Longitude of point 1
- *  lat2            float       Latitude of point 2
- *  lon2            float       Longitude of point 2
- *  callback        function    async completion callback
+ *  query
+ *  {
+ *      lat1            float       Latitude of point 1
+ *      lon1            float       Longitude of point 1
+ *      lat2            float       Latitude of point 2
+ *      lon2            float       Longitude of point 2
+ *  }
+ *  callback            function    async completion callback
  *
  * Returns:
  *  undefined
@@ -881,11 +884,14 @@ FlightAware.prototype.LatLongsToDistance = function(query, callback) {
  * flights around a good chunk of the world, etc.
  *
  * Parameters:
- *  lat1            float       Latitude of point 1
- *  lon1            float       Longitude of point 1
- *  lat2            float       Latitude of point 2
- *  lon2            float       Longitude of point 2
- *  callback        function    async completion callback
+ *  query
+ *  {
+ *      lat1            float       Latitude of point 1
+ *      lon1            float       Longitude of point 1
+ *      lat2            float       Latitude of point 2
+ *      lon2            float       Longitude of point 2
+ *  }
+ *  callback            function    async completion callback
  *
  * Returns:
  *  undefined
@@ -907,10 +913,13 @@ FlightAware.prototype.LatLongsToHeading = function(query, callback) {
  * See MapFlightEx for a more advanced interface with historical flight capabilities.
  *
  * Parameters:
- *  ident           string      requested tail number
- *  mapHeight       int         height of requested image, in pixels
- *  mapWidth        int         width of requested image, in pixels
- *  callback        function    async completion callback
+ *  query
+ *  {
+ *      ident           string      requested tail number
+ *      mapHeight       int         height of requested image, in pixels
+ *      mapWidth        int         width of requested image, in pixels
+ *  }
+ *  callback            function    async completion callback
  *
  * Returns:
  *  undefined
@@ -950,26 +959,31 @@ FlightAware.prototype.MapFlight = function(query, callback) {
  * See MapFlight for a simpler interface.
  *
  * Parameters:
- *  faFlightID              string      unique identifier assigned by FlightAware for the 
- *                                      desired flight (or use "ident@departureTime")
- *  mapHeight               int         height of requested image, in pixels
- *  mapWidth                int         width of requested image, in pixels
- *  layer_on                string()    optional list of map layer names to enable
- *  layer_off               string()    optional list of map layer names to disable
- *  show_data_blocks        bool        if true, a textual caption of the ident, type, 
- *                                      heading, altitude, origin, and destination will
- *                                      be displayed below the flight position.
- *  show_airports           bool        if true, show the origin/destination airports as 
- *                                      dots with textual labels.
- *  airports_expand_view    bool        if true, force zoom area to ensure 
- *                                      origin/destination airports are visible. 
- *                                      show_airports must also be true to use this 
- *                                      feature.
- * latlon_box               float()     optionally specify the zoom area. if specified, 
- *                                      should be a list of 4 elements (hilat, lowlon, 
- *                                      lowlat, hilon), otherwise an automatic zoom will 
- *                                      be used.
- *  callback                function    async completion callback
+ *  query
+ *  {
+ *      faFlightID              string      unique identifier assigned by FlightAware 
+ *                                          for the desired flight (or use 
+ *                                          "ident@departureTime")
+ *      mapHeight               int         height of requested image, in pixels
+ *      mapWidth                int         width of requested image, in pixels
+ *      layer_on                string()    optional list of map layer names to enable
+ *      layer_off               string()    optional list of map layer names to disable
+ *      show_data_blocks        bool        if true, a textual caption of the ident, 
+ *                                          type, heading, altitude, origin, and 
+ *                                          destination will be displayed below the 
+ *                                          flight position.
+ *      show_airports           bool        if true, show the origin/destination 
+ *                                          airports as dots with textual labels.
+ *      airports_expand_view    bool        if true, force zoom area to ensure 
+ *                                          origin/destination airports are visible.  
+ *                                          show_airports must also be true to use this 
+ *                                          feature.
+ *      latlon_box              float()     optionally specify the zoom area. if 
+ *                                          specified, should be a list of 4 elements 
+ *                                          (hilat, lowlon, lowlat, hilon), otherwise an 
+ *                                          automatic zoom will be used.
+ *  }
+ *  callback                    function    async completion callback
  *
  * Returns:
  *  undefined
@@ -980,6 +994,313 @@ FlightAware.prototype.MapFlight = function(query, callback) {
  */
 FlightAware.prototype.MapFlightEx = function(query, callback) {
     this._request("MapFlightEx", query, callback)
+};
+
+/*
+ * Given an airport, return the current raw METAR weather info. If no reports are 
+ * available at the requested airport but are for a nearby airport, then the report 
+ * from that airport may be returned instead.  
+ * 
+ * Use the MetarEx function for more functionality, including access to historical 
+ * weather and parsed.
+ 
+ * Parameters:
+ *  airport	    string	    the ICAO airport ID (e.g., KLAX, KSFO, KIAH, KHOU, KJFK, 
+ *                          KEWR, KORD, KATL, etc.)
+ *  callback    function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          string      metar data
+ */
+FlightAware.prototype.Metar = function(airport, callback) {
+    var query = { airport : airport };
+    this._request("Metar", query, callback)
+};
+
+/*
+ * Given an airport, return the METAR weather info as parsed, human-readable, and raw 
+ * formats. If no reports are available at the requested airport but are for a nearby 
+ * airport, then the reports from that airport may be returned instead.  
+ *
+ * If a value greater than 1 is specified for howMany then multiple past reports will be 
+ * returned, in order of increasing age. Historical data is generally only available for 
+ * the last 7 days.  
+ *
+ * Use the Metar function for a simpler interface to access just the most recent raw 
+ * report.
+ *
+ * Parameters:
+ *  query
+ *  {
+ *      airport	    string	    the ICAO airport ID (e.g., KLAX, KSFO, KIAH, KHOU, KJFK, 
+ *                              KEWR, KORD, KATL, etc.)
+ *      startTime   int         the latest date and time to begin retrieving results from 
+ *                              (in seconds since 1970), enumerating backwards in time 
+ *                              when howMany is non-zero. If specified as zero, then the 
+ *                              most recent report available is assumed.
+ *      howMany	    int	        determines the number of results. Must be a positive 
+ *                              integer value less than or equal to 15, unless 
+ *                              SetMaximumResultSize has been called.
+ *      offset	    int	        must be an integer value of the offset row count you 
+ *                              want the search to start at. Most requests should be 0.
+ *  }
+ *  callback        function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          object      ArrayOfMetarStruct
+ */
+FlightAware.prototype.MetarEx = function(query, callback) {
+    this._request("MetarEx", query, callback)
+};
+
+/*
+ * Given an airport, return the terminal area forecast, if available.
+ *
+ * See Taf for a simpler interface.
+ *
+ * Parameters:
+ *  airport	    string	    the ICAO airport ID (e.g., KLAX, KSFO, KIAH, KHOU, KJFK, 
+ *                          KEWR, KORD, KATL, etc.)
+ *  callback    function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          string      NTaf data
+ */
+FlightAware.prototype.NTaf = function(airport, callback) {
+    var query = { airport : airport };
+    this._request("NTaf", query, callback)
+};
+
+/*
+ * RegisterAlertEndpoint specifies where pushed FlightXML flight alerts.  Calling this 
+ * method a second time will overwrite any previously registered endpoint.  
+ *
+ * The other methods SetAlert, GetAlerts, and DeleteAlert can be used to manage 
+ * FlightXML flight alerts.  
+ *
+ * The "format_type" argument controls how the flight alert is delivered to the 
+ * specified address. Currently "format_type" must always be "json/post", although other 
+ * formats may be introduced in the future.  When an alert occurs, FlightAware servers 
+ * will deliver an HTTP POST to the specified address with the body containing a 
+ * JSON-encoded message about the alert and flight.  
+ *
+ * Returns 1 on success, otherwise an error record is returned.  
+ *
+ * Parameters:
+ *  query
+ *  {
+ *      address	        string	    URL of endpoint
+ *      format_type	    string	    Must be "json/post"
+ *  }
+ *  callback            function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          int         1 on success
+ */
+FlightAware.prototype.RegisterAlertEndpoint = function(query, callback) {
+    this._request("RegisterAlertEndpoint", query, callback)
+};
+
+/*
+ * RoutesBetweenAirports returns information about assigned IFR routings between two 
+ * airports. For each known routing, the route, number of times that route has been 
+ * assigned, and the filed altitude (measured in hundreds of feet or Flight Level) are 
+ * returned. Only flights that departed within the last 6 hours and flight plans filed 
+ * within the last 3 days are considered.
+ *
+ * Parameters:
+ *  query
+ *  {
+ *      origin	        string	    the ICAO airport ID (e.g., KLAX, KSFO, KIAH, KHOU, 
+ *                                  KJFK, KEWR, KORD, KATL, etc.)
+ *      destination	    string	    the ICAO airport ID (e.g., KLAX, KSFO, KIAH, KHOU, 
+ *                                  KJFK, KEWR, KORD, KATL, etc.)
+ *  }
+ *  callback            function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          object      ArrayOfRoutesBetweenAirportsStruct
+ */
+FlightAware.prototype.RoutesBetweenAirports = function(query, callback) {
+    this._request("RoutesBetweenAirports", query, callback)
+};
+
+/*
+ * RoutesBetweenAirportsEx returns information about assigned IFR routings between two 
+ * airports. This is an extended version of RoutesBetweenAirports that allows you to 
+ * specify the maximum age of flights to consider. For each known routing, the route, 
+ * number of times that route has been assigned, the filed altitude (lowest and highest 
+ * among found plans, measured in 100 ft intervals), and the most recent filed departure 
+ * date/time are returned.  
+ *
+ * See RoutesBetweenAirports for a simpler interface.
+ *
+ * Parameters:
+ *  query
+ *  {
+ *      origin	        string	    the ICAO airport ID (e.g., KLAX, KSFO, KIAH, KHOU, 
+ *                                  KJFK, KEWR, KORD, KATL, etc.)
+ *      destination	    string	    the ICAO airport ID (e.g., KLAX, KSFO, KIAH, KHOU, 
+ *                                  KJFK, KEWR, KORD, KATL, etc.)
+ *      howMany	        int	        determines the number of results. Must be a positive 
+ *                                  integer value less than or equal to 15, unless 
+ *                                  SetMaximumResultSize has been called.
+ *      offset	        int	        must be an integer value of the offset row count you 
+ *                                  want the search to start at. Most requests should 
+ *                                  be 0.
+ *      maxDepatureAge	string	    maximum departure age of flights to consider (for 
+ *                                  example: "3 days" or "72 hours")
+ *      maxFileAge  	string	    maximum filed plan age of flights to consider (for 
+ *                                  example: "6 days"). This should generally be longer 
+ *                                  than maxDepartureAge.
+ *  }
+ *  callback            function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          object      ArrayOfRoutesBetweenAirportsExStruct
+ */
+FlightAware.prototype.RoutesBetweenAirportsEx = function(query, callback) {
+    this._request("RoutesBetweenAirportsEx", query, callback)
+};
+
+/*
+ * Scheduled returns information about scheduled flights (technically, filed IFR flights)
+ * for a specified airport and a maximum number of flights to be returned. Scheduled 
+ * flights are returned from soonest to furthest in the future to depart. Only flights 
+ * that have not actually departed, and have a scheduled departure time between 2 hours 
+ * in the past and 24 hours in the future, are considered.  
+ *
+ * Times returned are seconds since 1970 (UNIX epoch time).
+ *
+ * See also Arrived, Departed, and Enroute for other airport tracking functionality.
+ *
+ * Parameters:
+ *  query
+ *  {
+ *      airport	        string	    the ICAO airport ID (e.g., KLAX, KSFO, KIAH, KHOU, 
+ *                                  KJFK, KEWR, KORD, KATL, etc.)
+ *      howMany	        int	        determines the number of results. Must be a positive 
+ *                                  integer value less than or equal to 15, unless 
+ *                                  SetMaximumResultSize has been called.
+ *      offset	        int	        must be an integer value of the offset row count you 
+ *                                  want the search to start at. Most requests should 
+ *                                  be 0.
+ *      filter	        string	    can be "ga" to show only general aviation traffic, 
+ *                                  "airline" to only show airline traffic, or null/empty 
+ *                                  to show all raffic.
+ *  }
+ *  callback            function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          object      ScheduledStruct
+ */
+FlightAware.prototype.Scheduled = function(query, callback) {
+    this._request("Scheduled", query, callback)
+};
+
+/*
+ * Search performs a query for data on all airborne aircraft to find ones matching the 
+ * search query. Query parameters include a latitude/longitude box, aircraft ident with 
+ * wildcards, type with wildcards, prefix, suffix, origin airport, destination airport, 
+ * origin or destination airport, groundspeed, and altitude. It takes search terms in a 
+ * single string comprising "-key value" pairs and returns an array of flight structures.
+ * Codeshares and alternate idents are NOT searched when using the -idents clause.  
+ *
+ * Keys include: 
+ *  -prefix STRING
+ *  -type STRING
+ *  -suffix STRING
+ *  -idents STRING
+ *  -destination STRING
+ *  -origin STRING
+ *  -originOrDestination STRING
+ *  -aboveAltitude INTEGER
+ *  -belowAltitude INTEGER
+ *  -aboveGroundspeed INTEGER
+ *  -belowGroundspeed INTEGER
+ *  -latlong "MINLAT MINLON MAXLAT MAXLON"
+ *  -filter {ga|airline}
+ *  -inAir {0|1} 
+ *
+ * To search for all aircraft below ten-thousand feet with a groundspeed over 200 kts: 
+ *  -belowAltitude 100 -aboveGroundspeed 200
+ *
+ * To search for all in-air Boeing 777s: 
+ *  -type B77*
+ *
+ * To search for all aircraft heading to Los Angeles International Airport (LAX) that 
+ * are "heavy" aircraft: 
+ *  -destination KLAX -prefix H
+ *
+ * To search for all United Airlines flights in Boeing 737s 
+ *  -idents UAL* -type B73*
+ *
+ * See the SearchBirdseyeInFlight function for additional functionality.
+ *
+ * Parameters:
+ *  query
+ *  {
+ *      query                       (optional) specify the query string instead of
+ *                                  using the parameters map
+ *      parameters                  a map of key value pairs that create the query string
+ *      {
+ *          key1 : value1,          e.g. "type" : "B77*",
+ *          key2 : value2,          e.g. "destination" : "KLAX",  
+ *          ...
+ *      }
+ *      howMany	        int	        determines the number of results. Must be a positive 
+ *                                  integer value less than or equal to 15, unless 
+ *                                  SetMaximumResultSize has been called.
+ *      offset	        int	        must be an integer value of the offset row count you 
+ *                                  want the search to start at. Most requests should 
+ *                                  be 0.
+ *  }
+ *  callback            function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          object      InFlightStruct
+ */
+FlightAware.prototype.Search = function(query, callback) {
+    var queryString = query.query || '';
+    for(var q in query.parameters) {
+        var value = query.parameters[q];
+        queryString += ' -' + q + ' ' + value;
+    }
+
+    query.query = queryString;
+    this._request("Search", query, callback)
 };
 
 

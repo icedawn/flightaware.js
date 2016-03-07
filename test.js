@@ -185,3 +185,71 @@ client.MapFlightEx({
 }, function(err, result) {
     if(verbose) console.log('err, result = ', err, result);
 });
+
+client.Metar('KSFO', function(err, result) {
+    if(verbose) console.log('err, result = ', err, result);
+});
+
+client.MetarEx({
+    airport: 'KSFO', 
+    howMany: 1,
+}, function(err, result) {
+    if(verbose) console.log('err, result = ', err, result);
+});
+
+client.NTaf('KSFO', function(err, result) {
+    if(verbose) console.log('err, result = ', err, result);
+});
+
+client.RegisterAlertEndpoint({
+    address: 'http://www.example.com', 
+    format_type: 'json/post',
+}, function(err, result) {
+    if(verbose) console.log('err, result = ', err, result);
+});
+
+client.RoutesBetweenAirports({
+    origin: 'KSFO', 
+    destination: 'KLAX',
+}, function(err, result) {
+    if(verbose) console.log('err, result = ', err, result);
+});
+
+client.RoutesBetweenAirportsEx({
+    origin: 'KSFO', 
+    destination: 'KLAX',
+    howMany: 1,
+}, function(err, result) {
+    if(verbose) console.log('err, result = ', err, result);
+});
+
+client.Scheduled({
+    airport: 'KSFO', 
+    howMany: 1,
+}, function(err, result) {
+    if(verbose) console.log('err, result = ', err, result);
+});
+
+queries = [
+    { "type" : "B77*" },
+    { "belowAltitude" : 100, "aboveGroundspeed" : 200 },
+    { "destination" : "KLAX", "prefix" : "H" },
+    { "idents" : "UAL*", "type" : "B73*" },
+];
+
+for(var i in queries) {
+    client.Search({
+        parameters: queries[i],
+        howMany: 1,
+    }, function(err, result) {
+        if(verbose) console.log('err, result = ', err, result);
+    });
+}
+
+client.Search({
+    query: '-destination KLAX -prefix H',
+    howMany: 1,
+}, function(err, result) {
+    if(verbose) console.log('err, result = ', err, result);
+});
+
