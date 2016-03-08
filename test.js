@@ -293,11 +293,30 @@ for(var i in positionQueries) {
     });
 }
 
-
 client.SearchCount({
     query: '-destination KLAX -prefix H',
     howMany: 1,
 }, function(err, result) {
     if(verbose) console.log('err, result = ', err, result);
 });
+
+// XXX:  need to create a SetAlert test
+
+client.SetMaximumResultSize(100, function(err, result) {
+    if(verbose) console.log('err, result = ', err, result);
+});
+
+client.Taf('KSFO', function(err, result) {
+    if(verbose) console.log('err, result = ', err, result);
+});
+
+client.TailOwner('N415PW', function(err, result) {
+    if(verbose) console.log('err, result = ', err, result);
+});
+
+
+client.ZipcodeInfo('95060', function(err, result) {
+    if(verbose) console.log('err, result = ', err, result);
+});
+
 

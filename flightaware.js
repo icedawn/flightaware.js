@@ -1600,5 +1600,170 @@ FlightAware.prototype.SearchCount = function(query, callback) {
     this._request("SearchCount", query, callback)
 };
 
+/*
+ * SetAlert creates or updates a FlightXML flight alert. When the alert is triggered, 
+ * a callback mechanism will be used to notify the address specified by 
+ * RegisterAlertEndpoint. Each alert that is triggered is charged at the rate of one 
+ * "class 2" FlightXML query.  
+ *
+ * If the "alert_id" argument is specified, then an existing alert is updated to the 
+ * new values specified, otherwise a 0 or blank alert_id will cause a new alert to be 
+ * created.  
+ * 
+ * As a special case, if "alert_id" is specified as -1 and "ident" is not blank, update 
+ * the most recently modified alert for the same "ident" to the arguments specified. If 
+ * no existing alert for that "ident" exists, create it.  
+ *
+ * For a single day alert, specify date_start and date_end with the same value. For a 
+ * recurring alert, specify both date_start as 0 and date_end as 0.  
+ *
+ * The "channel" argument is a Tcl-style string list that specifies the target channel 
+ * ID and the triggering event types. At this time, the channel ID should always be 
+ * specified as 16. Supported event types are: e_filed e_departure e_arrival e_diverted 
+ * e_cancelled.  For example this specifies a FlightXML Push channel with several flight 
+ * statuses: "{16 e_filed e_departure e_arrival e_diverted e_cancelled}" 
+ *
+ * The "max_weekly" argument is used to prevent the an alert from being created that 
+ * might generate more alerts than desired. This check is only done at alert creation 
+ * time based on historical trends for the filter selection, and is not an enforcement 
+ * of alerts actually delivered.  Returns a non-zero number (the alert_id that was added 
+ * or updated) on success, otherwise an exception is raised. An error string beginning
+ * with "OVERLIMIT" means the user has exceeded the maximum number of enabled alerts 
+ * permitted by their account type; consider disabling or deleting some alerts, or 
+ * request an account upgrade. An error string beginning with "FLOODWARN" means that the 
+ * new alert was rejected because it was predicted to exceed the number of alerts 
+ * specified by the "max_weekly" argument.
+ *
+ *
+ * Parameters:
+ *  query
+ *  {
+ *      alert_id        int         alert_id of an existing alert to update.
+ *                                  specify 0 or "" to create a new alert.
+ *                                  specify -1 to upsert an alert.
+ *                                  otherwise an existing alert id.
+ *      ident           string      optional ident or faFlightID of flight
+ *      origin          string      optional origin airport code
+ *      destination     string      optional destination airport code
+ *      aircrafttype    string      optional aircraft type
+ *      date_start      int         optional starting date of alert (in epoch seconds,
+ *                                  will be rounded to whole day)
+ *      date_end        int         optional ending date of alert (in epoch seconds,
+ *                                  will be rounded to whole day)
+ *      channels        string      list of channels and event types (see description
+ *                                  for syntax)
+ *      enabled         boolean     whether the alert should be enabled or disabled (if
+ *                                  missing, default is true)
+ *      max_weekly      int         reject the new alert if the estimated number of
+ *                                  alerts per week exceeds this amount (recommended
+ *                                  default 1000)
+ *  }
+ *  callback            function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          int         returns non-zero on success
+ */
+FlightAware.prototype.SetAlert = function(query, callback) {
+    this._request("SetAlert", query, callback)
+};
+
+/*
+ * SetMaximumResultSize modifies the maximum result count returned by other FlightXML 
+ * methods. Many FlightXML methods that return lists limit the number of results to 15 
+ * records for performance reasons, even if you specify a larger number to its "howMany"
+ * argument. Using this method, you can raise the limit allowed for the "howMany" 
+ * argument for all subsequent FlightXML methods invoked using your account. Once invoked,
+ * the last specified max_size is remembered for your account until the next call to 
+ * SetMaximumResultSize; it is not necessary to call this function repeatedly.  
+ *
+ * Any request that has a "howMany" argument and returns more than 15 records will be 
+ * billed at a rate equivalent to the actual number of results returned divided by 15, 
+ * rounded up. For example, if you call SetMaximumResultSize with a max_size of 100, 
+ * then call FlightInfo with howMany of 45, but it only returns 35 records, you will be 
+ * charged the equivalent of calling FlightInfo a total of 3 times, or 1+int(35/15).
+ *
+ * Parameters:
+ *  max_size    int         Maximum number of results allowed to be returned
+ *  callback    function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          int         always returns 0
+ */
+FlightAware.prototype.SetMaximumResultSize = function(max_size, callback) {
+    var query = { max_size : max_size };
+    this._request("SetMaximumResultSize", query, callback)
+};
+
+/*
+ * Given an airport, return the terminal area forecast, if available.
+ *
+ * See NTaf for a more advanced interface.
+ *
+ * Parameters:
+ *  airport	    string	    the ICAO airport ID (e.g., KLAX, KSFO, KIAH, KHOU, KJFK, 
+ *                          KEWR, KORD, KATL, etc.)
+ *  callback    function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          int         always returns 0
+ */
+FlightAware.prototype.Taf = function(airport, callback) {
+    var query = { airport : airport };
+    this._request("Taf", query, callback)
+};
+
+/*
+ * TailOwner returns information about an the owner of an aircraft, given a flight 
+ * number or N-number. Data returned includes owner's name, location (typically city 
+ * and state), and website, if any. Codeshares and alternate idents are automatically 
+ * searched.
+ *
+ * Parameters:
+ *  ident       string      requested tail number
+ *  callback    function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          int         TailOwnerStruct
+ */
+FlightAware.prototype.TailOwner = function(ident, callback) {
+    var query = { ident : ident };
+    this._request("TailOwner", query, callback)
+};
+
+/*
+ * ZipcodeInfo returns information about a five-digit zipcode. Of particular importance 
+ * is latitude and longitude.  
+ *
+ * Parameters:
+ *  zipcode	    string	    a five-digit U.S. Postal Service zipcode.
+ *  callback    function    async completion callback
+ *
+ * Returns:
+ *  undefined
+ *
+ * Async callback:  callback(err, result)
+ *  err             object      undefined or error information
+ *  result          int         ZipcodeInfoStruct
+ */
+FlightAware.prototype.ZipcodeInfo = function(zipcode, callback) {
+    var query = { zipcode : zipcode };
+    this._request("ZipcodeInfo", query, callback)
+};
 
 module.exports = FlightAware;
