@@ -18,6 +18,9 @@ FlightAware.airlineInsightReportType = {
     CARRIERS_BY_CARGO_WEIGHT : 4
 };
 
+/*
+ * Specify the FlightAware credentials to use for API access.
+ */
 FlightAware.prototype.setCredentials = function(username, apiKey) {
     this.username = username || {};
     this.apiKey = apiKey || {};
