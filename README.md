@@ -1,4 +1,4 @@
-# flightaware.js - NodeJS RESTful API for FlightAware.com
+# flightaware.js - Node.js RESTful API for FlightAware.com
 
 This is a Javascript/Node.js based wrapper which simplifies communication with the FlightAware.com RESTful APIs.  Documentation for the APIs can be found at:  http://flightaware.com/commercial/flightxml/explorer
 
