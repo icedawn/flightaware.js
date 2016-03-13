@@ -14,7 +14,13 @@ npm install flightaware.js
 ```
 
 ## Unit testing
-In order to unit test the flightaware.js module, you will need to create a file called ```config.js``` in the ```flightaware.js``` source tree.
+In order to unit test the flightaware.js module, you will need to check out the FlightAware.js sources and create a file called ```config.js``` in the ```flightaware.js``` source tree.
+
+### Get the flightaware.js sources
+```shell
+git clone https://github.com/icedawn/flightaware.js
+cd flightaware.js
+```
 
 ### Setting up config.js for unit testing
 ```shell
@@ -28,7 +34,6 @@ EOF
 ```
 
 ### Running the unit tests
-
 ```shell
 node test.js
 ```
