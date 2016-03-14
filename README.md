@@ -7,6 +7,10 @@ In order to use these APIs, you'll need to be a commercial subscriber to the Fli
 ## FlightAware.com API access
 In order to use the flightaware.js module, you'll need to have FlightAware username and api_key.  You can get these from http://flightaware.com/commercial/flightxml.  Note, that you'll need to sign up for the service.  There is a free tier of service, but not all of the APIs are supported and the unit tests, described below, may fail.
 
+You can find an example of how to use flightaware.js with AngularJS/node/express/bootstrap [here](https://github.com/icedawn/angular-flightaware.js).
+
+![AngularJS/flightaware.js example screenshot](https://raw.githubusercontent.com/icedawn/angular-flightaware.js/master/screenshots/arrival-screenshot.png?raw=true "AngularJS/flightaware.js example screenshot")
+
 ## Installation
 Install this module using npm.
 ```shell
@@ -25,7 +29,6 @@ cd flightaware.js
 ### Setting up config.js for unit testing
 ```shell
 cat > config.js << EOF
-api_key = your-flightaware-api-key
 module.exports = {
     username : 'your-flightaware-username',
     apiKey :   'your-flightaware-api-key'
