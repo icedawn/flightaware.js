@@ -203,7 +203,6 @@ FlightAware.prototype.AirlineInfo = function(airlineCode, callback) {
  *      4 = Carriers by most cargo weight
  *
  * Parameters:
- *  airlineCode     string      the ICAO airline ID (e.g., COA, ASA, UAL, etc.)
  *  query           object      query parameters (defined below)
  *  {
  *      origin          string  airport code of origin
