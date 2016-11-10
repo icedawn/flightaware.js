@@ -4,7 +4,9 @@
   "description": "FlightAware APIs",
   "main": "flightaware.js",
   "scripts": {
-    "test": "node test.js"
+    "old-test": "node test.js",
+    "eslint": "eslint *.js",
+    "test": "nyc ./node_modules/.bin/mocha --opts mocha.opts mocha-test.js"
   },
   "repository": {
     "type": "git",
@@ -23,6 +25,26 @@
   },
   "homepage": "https://github.com/icedawn/flightaware.js#readme",
   "dependencies": {
+    "eslint": "^3.9.1",
+    "eslint-config-google": "^0.7.0",
+    "eslint-config-standard": "^6.2.1",
+    "eslint-plugin-promise": "^3.3.1",
+    "eslint-plugin-standard": "^2.0.1",
+    "nyc": "^8.4.0",
     "request": "^2.69.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "coveralls": "^2.11.14",
+    "eslint": "^3.9.1",
+    "eslint-config-google": "^0.7.0",
+    "mocha": "^3.1.2",
+    "mocha-lcov-reporter": "^1.2.0"
+  },
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text"
+    ]
   }
 }
