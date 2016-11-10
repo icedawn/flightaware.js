@@ -1,8 +1,23 @@
 // Local developer configuration ...
 var config = require('./config');
+var expect = require("chai").expect;
 var FlightAware = require('./flightaware');
 var verbose = true;
 var client = new FlightAware(config.username, config.apiKey);
+
+describe('FlightAware constructor', function() {
+    it('creates a client object', function() {
+        expect(client).to.not.be.null;
+    });
+});
+
+describe('setCredentials', function() {
+    it('sets the FlightAware username and api key', function() {
+        client.setCredentials(config.username, config.apiKey);
+        expect(client.username).to.equal(config.username);
+        expect(client.apiKey).to.equal(config.apiKey);
+    });
+});
 
 var tests = [
     'AircraftType',
