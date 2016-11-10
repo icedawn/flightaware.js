@@ -161,10 +161,27 @@ for(var i in tests) {
             case 'AirlineInsight':
                 var origin = 'SJC';
                 var destination = 'LAX';
-                it('looks up airline traveling from ' + origin + ' to ' + destination, function() {
+                it('looks up airline information for route ' + origin + ' to ' + destination + ' (default report)', function() {
                     client.AirlineInsight({ 
                         origin: origin,
-                        destination: destination
+                        destination: destination,
+                    }, function(err, result) {
+                        expect(err).to.be.null;
+                        expect(result).to.not.be.null;
+                        if(verbose) console.log('err, result = ', err, result);
+                        if(result && result.data) {
+                            var insights = result.data;
+                            for(var i in insights) {
+                                if(verbose) console.log('insight = ', insights[i]);
+                            }
+                        }
+                    });
+                });
+                it('looks up airline information for route ' + origin + ' to ' + destination + ' (alternate route popularity)', function() {
+                    client.AirlineInsight({ 
+                        origin: origin,
+                        destination: destination,
+                        reportType: 1,
                     }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
@@ -273,7 +290,7 @@ for(var i in tests) {
                 break;
 
             case 'DeleteAlert':
-                it('delete alert', function() {
+                it('deletes an alert', function() {
                     client.DeleteAlert('1', function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
