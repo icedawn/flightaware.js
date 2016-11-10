@@ -6,3 +6,5 @@ script: npm test
 before_install:
 - openssl aes-256-cbc -K $encrypted_d495993df28e_key -iv $encrypted_d495993df28e_iv
   -in config.js.enc -out config.js -d
+after_script:
+  - 'cat coverage/lcov.info | ./node_modules/.bin/coveralls'
