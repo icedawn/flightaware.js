@@ -98,8 +98,43 @@ for(var i in tests) {
                 break;
 
             case 'AirlineFlightSchedules':
-                it('looks up airline flight schedules', function() {
+                it('looks up airline flight schedules for the next 24 hours', function() {
                     client.AirlineFlightSchedules({
+                        howMany: 1
+                    }, function(err, result) {
+                        expect(err).to.be.null;
+                        expect(result).to.not.be.null;
+                        if(result && result.data) {
+                            var schedules = result.data;
+                            for(var i in schedules) {
+                                if(verbose) console.log('schedule = ', schedules[i]);
+                            }
+                        }
+                    });
+                });
+
+                var now = Math.floor(Date.now()/1000);
+
+                it('looks up airline flight schedules for the next hour', function() {
+                    client.AirlineFlightSchedules({
+                        startDate: now,
+                        endDate: now + 1*60*60,
+                        howMany: 1
+                    }, function(err, result) {
+                        expect(err).to.be.null;
+                        expect(result).to.not.be.null;
+                        if(result && result.data) {
+                            var schedules = result.data;
+                            for(var i in schedules) {
+                                if(verbose) console.log('schedule = ', schedules[i]);
+                            }
+                        }
+                    });
+                });
+                it('looks up airline flight schedules for the past hour', function() {
+                    client.AirlineFlightSchedules({
+                        startDate: now - 1*60*60,
+                        endDate: now,
                         howMany: 1
                     }, function(err, result) {
                         expect(err).to.be.null;
