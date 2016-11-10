@@ -1,5 +1,9 @@
 # flightaware.js - Node.js RESTful API for FlightAware.com
 
+[![Build Status][travis-image]][travis-url]
+[![NPM Version][npm-image]][npm-url]
+[![Coverage][coveralls-image]][coveralls-url]
+
 This is a Javascript/Node.js based wrapper which simplifies communication with the FlightAware.com RESTful APIs.  Documentation for the APIs can be found at:  http://flightaware.com/commercial/flightxml/explorer
 
 In order to use these APIs, you'll need to be a commercial subscriber to the FlightAware.com service, have a user name, and an API key.
@@ -40,3 +44,10 @@ EOF
 ```shell
 node test.js
 ```
+
+[npm-url]: https://www.npmjs.com/package/flightaware.js
+[npm-image]: https://img.shields.io/npm/v/flightaware.js.svg?style=flat
+[travis-url]: https://travis-ci.org/fdesjardins/flightaware.js
+[travis-image]: https://img.shields.io/travis/fdesjardins/flightaware.js.svg?style=flat
+[coveralls-url]: https://coveralls.io/r/fdesjardins/flightaware.js
+[coveralls-image]: https://img.shields.io/coveralls/fdesjardins/flightaware.js.svg?style=flat
