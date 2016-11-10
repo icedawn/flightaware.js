@@ -256,17 +256,28 @@ for(var i in tests) {
                 break;
 
             case 'FleetArrived':
-                client.FleetArrived({ 
-                    fleet: "URF", 
-                    howMany: 1 
-                }, report);
+                it('looks up airline information', function() {
+                    client.FleetArrived({ 
+                        fleet: "URF", 
+                        howMany: 1 
+                    }, function(err, result) {
+                        expect(err).to.be.null;
+                        expect(result).to.not.be.null;
+                    });
+                });
                 break;
 
             case 'FleetScheduled':
-                client.FleetScheduled({ 
-                    fleet: "URF", 
-                    howMany: 1 
-                }, report);
+                var fleet = 'URF';
+                it('looks up airline information', function() {
+                    client.FleetScheduled({ 
+                        fleet: fleet, 
+                        howMany: 1 
+                    }, function(err, result) {
+                        expect(err).to.be.null;
+                        expect(result).to.not.be.null;
+                    });
+                });
                 break;
 
             case 'FlightInfo':
