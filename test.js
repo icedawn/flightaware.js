@@ -52,19 +52,24 @@ var tests = [
     'ZipcodeInfo',
 ];
 
+var report = function(err, result) {
+    if(err) {
+        console.log('err =', err);
+    }
+    else if(verbose) {
+        console.log('result = ', result);
+    }
+};
+
 for(var i in tests) {
 
     switch(tests[i]) {
         case 'AircraftType':
-            client.AircraftType('GALX', function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.AircraftType('GALX', report);
             break;
 
         case 'AirlineFlightInfo':
-            client.AirlineFlightInfo('N415PW@1442008560', function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.AirlineFlightInfo('N415PW@1442008560', report);
             break;
 
         case 'AirlineFlightSchedules':
@@ -82,9 +87,7 @@ for(var i in tests) {
             break;
 
         case 'AirlineInfo':
-            client.AirlineInfo('UAL', function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.AirlineInfo('UAL', report);
             break;
 
         case 'AirlineInsight':
@@ -103,51 +106,35 @@ for(var i in tests) {
             break;
 
         case 'AirportInfo':
-            client.AirportInfo('SFO', function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.AirportInfo('SFO', report);
             break;
 
         case 'AllAirlines':
-            client.AllAirlines(function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.AllAirlines(report);
             break;
 
         case 'AllAirports':
-            client.AllAirports(function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.AllAirports(report);
             break;
 
         case 'Arrived':
-            client.Arrived({ airport: "KSFO", howMany: 1 }, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.Arrived({ airport: "KSFO", howMany: 1 }, report);
             break;
 
         case 'BlockIdentCheck':
-            client.BlockIdentCheck("N415PW", function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.BlockIdentCheck("N415PW", report);
             break;
 
         case 'CountAirportOperations':
-            client.CountAirportOperations("KSFO", function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.CountAirportOperations("KSFO", report);
             break;
 
         case 'CountAllEnrouteAirlineOperations':
-            client.CountAllEnrouteAirlineOperations(function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.CountAllEnrouteAirlineOperations(report);
             break;
 
         case 'DecodeFlightRoute':
-            client.DecodeFlightRoute('N415PW@1442008560', function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.DecodeFlightRoute('N415PW@1442008560', report);
             break;
 
         case 'DecodeRoute':
@@ -155,99 +142,73 @@ for(var i in tests) {
                 origin: 'KSQL', 
                 route: 'SJC V334 SAC SWR', 
                 destination: 'KTRK'
-            }, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            }, report);
             break;
 
         case 'DeleteAlert':
-            client.DeleteAlert('1', function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.DeleteAlert('1', report);
             break;
 
         case 'Departed':
             client.Departed({ 
                 airport: "KSFO", 
                 howMany: 1
-            }, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            }, report);
             break;
 
         case 'FleetArrived':
             client.FleetArrived({ 
                 fleet: "URF", 
                 howMany: 1 
-            }, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            }, report);
             break;
 
         case 'FleetScheduled':
             client.FleetScheduled({ 
                 fleet: "URF", 
                 howMany: 1 
-            }, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            }, report);
             break;
 
         case 'FlightInfo':
             client.FlightInfo({ 
                 ident: "N415PW", 
                 howMany: 1
-            }, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            }, report);
             break;
 
         case 'FlightInfoEx':
             client.FlightInfoEx({ 
                 ident: "N415PW", 
                 howMany: 1
-            }, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            }, report);
             break;
 
         case 'GetAlerts':
-            client.GetAlerts(function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.GetAlerts(report);
             break;
 
         case 'GetFlightID':
             client.GetFlightID({ 
                 ident: 'N415PW', 
                 departureTime: '1442008560' 
-            }, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            }, report);
             break;
 
         case 'GetHistoricalTrack':
-            client.GetHistoricalTrack('N415PW@1442008560', function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.GetHistoricalTrack('N415PW@1442008560', report);
             break;
 
         case 'GetLastTrack':
-            client.GetLastTrack('N415PW', function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.GetLastTrack('N415PW', report);
             break;
 
         case 'InboundFlightInfo':
-            client.InboundFlightInfo('N415PW-1457118526-1-0', function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.InboundFlightInfo('N415PW-1457118526-1-0', report);
             break;
 
         case 'InFlightInfo':
-            client.InFlightInfo('N415PW', function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.InFlightInfo('N415PW', report);
             break;
 
         case 'LatLongsToDistance':
@@ -256,9 +217,7 @@ for(var i in tests) {
                 lon1: -121.9291111,
                 lat2: 33.9425003,
                 lon2: -118.4080736,
-            }, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            }, report);
             break;
 
         case 'LatLongsToHeading':
@@ -267,9 +226,7 @@ for(var i in tests) {
                 lon1: -121.9291111,
                 lat2: 33.9425003,
                 lon2: -118.4080736,
-            }, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            }, report);
             break;
 
         case 'MapFlight':
@@ -277,9 +234,7 @@ for(var i in tests) {
                 ident: 'N415PW',
                 mapHeight: 32,
                 mapWidth: 32,
-            }, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            }, report);
             break;
 
         case 'MapFlightEx':
@@ -290,48 +245,36 @@ for(var i in tests) {
                 show_data_blocks: true,
                 show_airports: true,
                 airports_expand_view: true,
-            }, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            }, report);
             break;
 
         case 'Metar':
-            client.Metar('KSFO', function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.Metar('KSFO', report);
             break;
 
         case 'MetarEx':
             client.MetarEx({
                 airport: 'KSFO', 
                 howMany: 1,
-            }, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            }, report);
             break;
 
         case 'NTaf':
-            client.NTaf('KSFO', function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.NTaf('KSFO', report);
             break;
 
         case 'RegisterAlertEndpoint':
             client.RegisterAlertEndpoint({
                 address: 'http://www.example.com', 
                 format_type: 'json/post',
-            }, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            }, report);
             break;
 
         case 'RoutesBetweenAirports':
             client.RoutesBetweenAirports({
                 origin: 'KSFO', 
                 destination: 'KLAX',
-            }, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            }, report);
             break;
 
         case 'RoutesBetweenAirportsEx':
@@ -339,18 +282,14 @@ for(var i in tests) {
                 origin: 'KSFO', 
                 destination: 'KLAX',
                 howMany: 1,
-            }, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            }, report);
             break;
 
         case 'Scheduled':
             client.Scheduled({
                 airport: 'KSFO', 
                 howMany: 1,
-            }, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            }, report);
             break;
 
         case 'Search':
@@ -373,9 +312,7 @@ for(var i in tests) {
             client.Search({
                 query: '-destination KLAX -prefix H',
                 howMany: 1,
-            }, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            }, report);
             break;
 
         case 'SearchBirdseyeInFlight':
@@ -395,9 +332,7 @@ for(var i in tests) {
                 client.SearchBirdseyeInFlight({
                     query: query,
                     howMany: 1,
-                }, function(err, result) {
-                    if(verbose) console.log('err, result = ', err, result);
-                });
+                }, report);
             }
             break;
 
@@ -416,9 +351,7 @@ for(var i in tests) {
                     query: query,
                     uniqueFlights: true,
                     howMany: 1,
-                }, function(err, result) {
-                    if(verbose) console.log('err, result = ', err, result);
-                });
+                }, report);
             }
             break;
 
@@ -426,9 +359,7 @@ for(var i in tests) {
             client.SearchCount({
                 query: '-destination KLAX -prefix H',
                 howMany: 1,
-            }, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            }, report);
             break;
 
         case 'SetAlert':
@@ -436,27 +367,19 @@ for(var i in tests) {
             break;
 
         case 'SetMaximumResultSize':
-            client.SetMaximumResultSize(100, function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.SetMaximumResultSize(100, report);
             break;
 
         case 'Taf':
-            client.Taf('KSFO', function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.Taf('KSFO', report);
             break;
 
         case 'TailOwner':
-            client.TailOwner('N415PW', function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.TailOwner('N415PW', report);
             break;
 
         case 'ZipcodeInfo':
-            client.ZipcodeInfo('95060', function(err, result) {
-                if(verbose) console.log('err, result = ', err, result);
-            });
+            client.ZipcodeInfo('95060', report);
             break;
 
         default:
