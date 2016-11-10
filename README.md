@@ -47,7 +47,7 @@ node test.js
 
 [npm-url]: https://www.npmjs.com/package/flightaware.js
 [npm-image]: https://img.shields.io/npm/v/flightaware.js.svg?style=flat
-[travis-url]: https://travis-ci.org/fdesjardins/flightaware.js
-[travis-image]: https://img.shields.io/travis/fdesjardins/flightaware.js.svg?style=flat
-[coveralls-url]: https://coveralls.io/r/fdesjardins/flightaware.js
-[coveralls-image]: https://img.shields.io/coveralls/fdesjardins/flightaware.js.svg?style=flat
+[travis-url]: https://travis-ci.org/icedawn/flightaware.js
+[travis-image]: https://img.shields.io/travis/icedawn/flightaware.js.svg?style=flat
+[coveralls-url]: https://coveralls.io/r/icedawn/flightaware.js
+[coveralls-image]: https://img.shields.io/coveralls/icedawn/flightaware.js.svg?style=flat
