@@ -3,11 +3,13 @@ var config = require('./config');
 var expect = require("chai").expect;
 var FlightAware = require('./flightaware');
 var verbose = true;
-var client = new FlightAware(config.username, config.apiKey);
+var client = new FlightAware();
 
 describe('FlightAware constructor', function() {
     it('creates a client object', function() {
         expect(client).to.not.be.null;
+        expect(client.username).to.be.undefined;
+        expect(client.apiKey).to.be.undefined;
     });
 });
 

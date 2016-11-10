@@ -1,8 +1,8 @@
 var request = require('request');
 
 function FlightAware(username,apiKey) {
-    this.username = username || {};
-    this.apiKey = apiKey || {};
+    this.username = username;
+    this.apiKey = apiKey;
 }
 
 FlightAware.host = "flightxml.flightaware.com";
@@ -22,8 +22,8 @@ FlightAware.airlineInsightReportType = {
  * Specify the FlightAware credentials to use for API access.
  */
 FlightAware.prototype.setCredentials = function(username, apiKey) {
-    this.username = username || {};
-    this.apiKey = apiKey || {};
+    this.username = username;
+    this.apiKey = apiKey;
 };
 
 FlightAware.prototype._request = function(method, data, callback) {
