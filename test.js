@@ -296,6 +296,12 @@ for(var i in tests) {
                         expect(result).to.not.be.null;
                     });
                 });
+                it('deletes an alert using a null ID', function() {
+                    client.DeleteAlert(null, function(err, result) {
+                        expect(err).to.be.not.null;
+                        expect(result).to.be.null;
+                    });
+                });
                 break;
 
             case 'Departed':

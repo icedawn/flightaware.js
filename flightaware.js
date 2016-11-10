@@ -478,6 +478,9 @@ FlightAware.prototype.DeleteAlert = function(alertId, callback) {
         var query = { 'alert_id' : alertId };
         this._request("DeleteAlert", query, callback)
     }
+    else {
+        callback('Missing alertId', null);
+    }
 };
 
 /*
