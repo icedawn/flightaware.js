@@ -1,10 +1,8 @@
 // Local developer configuration ...
 var config = require('./config');
-
 var FlightAware = require('./flightaware');
-var client = new FlightAware(config.username, config.apiKey);
-
 var verbose = true;
+var client = new FlightAware(config.username, config.apiKey);
 
 var tests = [
     'AircraftType',
@@ -53,19 +51,6 @@ var tests = [
     'TailOwner',
     'ZipcodeInfo',
 ];
-
-var report = function(err, result) {
-    it('Returns a valid result', function() {
-        expect(err).to.be.null;
-        expect(result).to.not.be.null;
-    });
-    if(err) {
-        console.log('err =', err);
-    }
-    else if(verbose) {
-        console.log('result = ', result);
-    }
-};
 
 for(var i in tests) {
     
@@ -510,7 +495,10 @@ for(var i in tests) {
                         origin: origin, 
                         destination: destination,
                         howMany: 1,
-                    }, report);
+                    }, function(err, result) {
+                        expect(err).to.be.null;
+                        expect(result).to.not.be.null;
+                    });
                 });
                 break;
 
