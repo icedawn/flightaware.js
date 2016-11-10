@@ -4,9 +4,8 @@
   "description": "FlightAware APIs",
   "main": "flightaware.js",
   "scripts": {
-    "old-test": "node test.js",
     "eslint": "eslint *.js",
-    "test": "nyc ./node_modules/.bin/mocha --opts mocha.opts mocha-test.js"
+    "test": "nyc ./node_modules/.bin/mocha --opts mocha.opts test.js"
   },
   "repository": {
     "type": "git",
