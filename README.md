@@ -3,6 +3,8 @@
 [![Build Status][travis-image]][travis-url]
 [![NPM Version][npm-image]][npm-url]
 [![Coverage][coveralls-image]][coveralls-url]
+[![Dependencies][dependencies-image]][dependencies-url]
+
 
 This is a Javascript/Node.js based wrapper which simplifies communication with the FlightAware.com RESTful APIs.  Documentation for the APIs can be found at:  http://flightaware.com/commercial/flightxml/explorer
 
@@ -51,3 +53,5 @@ node test.js
 [travis-image]: https://img.shields.io/travis/icedawn/flightaware.js.svg?style=flat
 [coveralls-url]: https://coveralls.io/r/icedawn/flightaware.js
 [coveralls-image]: https://img.shields.io/coveralls/icedawn/flightaware.js.svg?style=flat
+[dependencies-url]: https://david-dm.org/jaredhanson/passport-google-oauth
+[dependencies-image]: https://img.shields.io/david/jaredhanson/passport-google-oauth.svg
