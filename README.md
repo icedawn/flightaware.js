@@ -44,7 +44,7 @@ EOF
 
 ### Running the unit tests
 ```shell
-node test.js
+npm test
 ```
 
 [npm-url]: https://www.npmjs.com/package/flightaware.js
