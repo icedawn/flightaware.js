@@ -2,22 +2,24 @@
 var config = require('./config');
 var expect = require("chai").expect;
 var FlightAware = require('./flightaware');
-var verbose = true;
+var verbose = false;
 var client = new FlightAware();
 
 describe('FlightAware constructor', function() {
-    it('creates a client object', function() {
+    it('creates a client object', function(done) {
         expect(client).to.not.be.null;
         expect(client.username).to.be.undefined;
         expect(client.apiKey).to.be.undefined;
+        done();
     });
 });
 
 describe('setCredentials', function() {
-    it('sets the FlightAware username and api key', function() {
+    it('sets the FlightAware username and api key', function(done) {
         client.setCredentials(config.username, config.apiKey);
         expect(client.username).to.equal(config.username);
         expect(client.apiKey).to.equal(config.apiKey);
+        done();
     });
 });
 
@@ -76,30 +78,33 @@ for(var i in tests) {
     describe(test, function() {
         switch(test) {
             case 'AircraftType':
-                it('looks up GALX aircraft', function() {
+                it('looks up GALX aircraft', function(done) {
                     client.AircraftType('GALX', function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
                         expect(result).to.contain.all.keys(['manufacturer', 'type', 'description']);
+                        done();
                     });
                 });
                 break;
 
             case 'AirlineFlightInfo':
                 var faFlightID = 'N415PW@1442008560';
-                it('looks up flight ID '+ faFlightID, function() {
+                it('looks up flight ID '+ faFlightID, function(done) {
                     client.AirlineFlightInfo('N415PW@1442008560', function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
                         expect(result).to.contain.all.keys(['ident']);
                         expect(result.ident).to.equal('N415PW');
+                        done();
                     });
                 });
                 break;
 
             case 'AirlineFlightSchedules':
-                it('looks up airline flight schedules for the next 24 hours', function() {
+                it('looks up airline flight schedules from KSJC for the next 24 hours', function(done) {
                     client.AirlineFlightSchedules({
+                        origin: 'KSJC',
                         howMany: 1
                     }, function(err, result) {
                         expect(err).to.be.null;
@@ -110,13 +115,15 @@ for(var i in tests) {
                                 if(verbose) console.log('schedule = ', schedules[i]);
                             }
                         }
+                        done();
                     });
                 });
 
                 var now = Math.floor(Date.now()/1000);
 
-                it('looks up airline flight schedules for the next hour', function() {
+                it('looks up airline flight schedules from KSJC for the next hour', function(done) {
                     client.AirlineFlightSchedules({
+                        origin: 'KSJC',
                         startDate: now,
                         endDate: now + 1*60*60,
                         howMany: 1
@@ -129,10 +136,13 @@ for(var i in tests) {
                                 if(verbose) console.log('schedule = ', schedules[i]);
                             }
                         }
+                        done();
                     });
                 });
-                it('looks up airline flight schedules for the past hour', function() {
+
+                it('looks up airline flight schedules from KSJC for the past hour', function(done) {
                     client.AirlineFlightSchedules({
+                        origin: 'KSJC',
                         startDate: now - 1*60*60,
                         endDate: now,
                         howMany: 1
@@ -145,15 +155,17 @@ for(var i in tests) {
                                 if(verbose) console.log('schedule = ', schedules[i]);
                             }
                         }
+                        done();
                     });
                 });
                 break;
 
             case 'AirlineInfo':
-                it('looks up airline information', function() {
+                it('looks up airline information', function(done) {
                     client.AirlineInfo('UAL', function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
@@ -161,7 +173,7 @@ for(var i in tests) {
             case 'AirlineInsight':
                 var origin = 'SJC';
                 var destination = 'LAX';
-                it('looks up airline information for route ' + origin + ' to ' + destination + ' (default report)', function() {
+                it('looks up airline information for route ' + origin + ' to ' + destination + ' (default report)', function(done) {
                     client.AirlineInsight({ 
                         origin: origin,
                         destination: destination,
@@ -175,9 +187,10 @@ for(var i in tests) {
                                 if(verbose) console.log('insight = ', insights[i]);
                             }
                         }
+                        done();
                     });
                 });
-                it('looks up airline information for route ' + origin + ' to ' + destination + ' (alternate route popularity)', function() {
+                it('looks up airline information for route ' + origin + ' to ' + destination + ' (alternate route popularity)', function(done) {
                     client.AirlineInsight({ 
                         origin: origin,
                         destination: destination,
@@ -192,83 +205,92 @@ for(var i in tests) {
                                 if(verbose) console.log('insight = ', insights[i]);
                             }
                         }
+                        done();
                     });
                 });
                 break;
 
             case 'AirportInfo':
                 var origin = 'SFO';
-                it('looks up airport information for ' + origin, function() {
+                it('looks up airport information for ' + origin, function(done) {
                     client.AirportInfo(origin, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'AllAirlines':
-                it('looks up all airline information', function() {
+                it('looks up all airline information', function(done) {
                     client.AllAirlines(function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'AllAirports':
-                it('looks up airline information', function() {
+                it('looks up airline information', function(done) {
                     client.AllAirports(function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'Arrived':
                 var origin = 'KSFO';
-                it('looks up arrival information for ' + origin, function() {
+                it('looks up arrival information for ' + origin, function(done) {
                     client.Arrived({ airport: origin, howMany: 1 }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'BlockIdentCheck':
                 var ident = 'N415PW';
-                it('looks up block ident for ' + ident, function() {
+                it('looks up block ident for ' + ident, function(done) {
                     client.BlockIdentCheck(ident, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'CountAirportOperations':
                 var origin = 'KSFO';
-                it('counts airport operations for ' + origin, function() {
+                it('counts airport operations for ' + origin, function(done) {
                     client.CountAirportOperations(origin, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'CountAllEnrouteAirlineOperations':
-                it('counts all enroute airline operations', function() {
+                it('counts all enroute airline operations', function(done) {
                     client.CountAllEnrouteAirlineOperations(function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'DecodeFlightRoute':
                 var faFlightID = 'N415PW@1442008560';
-                it('decodes flight route for ' + faFlightID, function() {
+                it('decodes flight route for ' + faFlightID, function(done) {
                     client.DecodeFlightRoute(faFlightID, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
@@ -277,7 +299,7 @@ for(var i in tests) {
                 var origin = 'KSQL';
                 var route = 'SJC V334 SAC SWR';
                 var destination = 'KTRK';
-                it('decodes route between ' + origin + ' and ' + destination, function() {
+                it('decodes route between ' + origin + ' and ' + destination, function(done) {
                     client.DecodeRoute({ 
                         origin: origin, 
                         route: route, 
@@ -285,94 +307,103 @@ for(var i in tests) {
                     }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'DeleteAlert':
-                it('deletes an alert', function() {
+                it('deletes an alert', function(done) {
                     client.DeleteAlert('1', function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
-                it('deletes an alert using a null ID', function() {
+                it('deletes an alert using a null ID', function(done) {
                     client.DeleteAlert(null, function(err, result) {
                         expect(err).to.be.not.null;
                         expect(result).to.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'Departed':
                 var origin = 'KSFO';
-                it('looks up airline information', function() {
+                it('looks up airline information', function(done) {
                     client.Departed({ 
                         airport: origin,
                         howMany: 1
                     }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'FleetArrived':
-                it('looks up airline information', function() {
+                it('looks up airline information', function(done) {
                     client.FleetArrived({ 
                         fleet: "URF", 
                         howMany: 1 
                     }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'FleetScheduled':
                 var fleet = 'URF';
-                it('looks up airline information', function() {
+                it('looks up airline information', function(done) {
                     client.FleetScheduled({ 
                         fleet: fleet, 
                         howMany: 1 
                     }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'FlightInfo':
                 var ident = 'N415PW';
-                it('looks up flight information for ' + ident, function() {
+                it('looks up flight information for ' + ident, function(done) {
                     client.FlightInfo({ 
                         ident: ident,
                         howMany: 1
                     }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'FlightInfoEx':
                 var ident = 'N415PW';
-                it('looks up flight information for ' + ident, function() {
+                it('looks up flight information for ' + ident, function(done) {
                     client.FlightInfoEx({ 
                         ident: ident, 
                         howMany: 1
                     }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'GetAlerts':
-                it('setup offline alerts', function() {
+                it('setup offline alerts', function(done) {
                     client.GetAlerts(function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
@@ -380,53 +411,58 @@ for(var i in tests) {
             case 'GetFlightID':
                 var ident = 'N415PW';
                 var departure = '1442008560' ;
-                it('looks up a flight for ' + ident, function() {
+                it('looks up a flight for ' + ident, function(done) {
                     client.GetFlightID({ 
                         ident: 'N415PW', 
                         departureTime: '1442008560' 
                     }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'GetHistoricalTrack':
                 var faFlightID = 'N415PW@1442008560' ;
-                it('looks up a historical track for ' + faFlightID, function() {
+                it('looks up a historical track for ' + faFlightID, function(done) {
                     client.GetHistoricalTrack(faFlightID, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'GetLastTrack':
                 var ident = 'N415PW';
-                it('looks up last track for ' + ident, function() {
+                it('looks up last track for ' + ident, function(done) {
                     client.GetLastTrack(ident, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'InboundFlightInfo':
                 var faFlightID = 'N415PW-1457118526-1-0';
-                it('looks up inbound flight info for ' + faFlightID, function() {
+                it('looks up inbound flight info for ' + faFlightID, function(done) {
                     client.InboundFlightInfo(faFlightID, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'InFlightInfo':
                 var ident = 'N415PW';
-                it('looks up in flight information for ' + ident, function() {
+                it('looks up in flight information for ' + ident, function(done) {
                     client.InFlightInfo(ident, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
@@ -436,7 +472,7 @@ for(var i in tests) {
                 var lon1 = -121.9291111;
                 var lat2 = 33.9425003;
                 var lon2 = -118.4080736;
-                it('computes distance between lat/long points', function() {
+                it('computes distance between lat/long points', function(done) {
                     client.LatLongsToDistance({ 
                         lat1: lat1,
                         lon1: lon1,
@@ -445,6 +481,7 @@ for(var i in tests) {
                     }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
@@ -454,7 +491,7 @@ for(var i in tests) {
                 var lon1 = -121.9291111;
                 var lat2 = 33.9425003;
                 var lon2 = -118.4080736;
-                it('computes heading between lat/long points', function() {
+                it('computes heading between lat/long points', function(done) {
                     client.LatLongsToHeading({ 
                         lat1: lat1,
                         lon1: lon1,
@@ -463,6 +500,7 @@ for(var i in tests) {
                     }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
@@ -471,7 +509,7 @@ for(var i in tests) {
                 var ident = 'N415PW';
                 var mapHeight = 32;
                 var mapWidth = 32;
-                it('creates flight image for ' + ident, function() {
+                it('creates flight image for ' + ident, function(done) {
                     client.MapFlight({
                         ident: ident,
                         mapHeight: mapHeight,
@@ -479,6 +517,7 @@ for(var i in tests) {
                     }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
@@ -487,7 +526,7 @@ for(var i in tests) {
                 var faFlightID = 'SKW2494@1442040480';
                 var mapHeight = 32;
                 var mapWidth = 32;
-                it('creates detailed flight image for ' + faFlightID, function() {
+                it('creates detailed flight image for ' + faFlightID, function(done) {
                     client.MapFlightEx({
                         faFlightID: faFlightID,
                         mapHeight: mapHeight,
@@ -498,52 +537,57 @@ for(var i in tests) {
                     }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'Metar':
                 var airport = 'KSFO';
-                it('looks up weather for airport ' + airport, function() {
+                it('looks up weather for airport ' + airport, function(done) {
                     client.Metar(airport, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'MetarEx':
                 var airport = 'KSFO';
-                it('looks up detailed weather for airport ' + airport, function() {
+                it('looks up detailed weather for airport ' + airport, function(done) {
                     client.MetarEx({
                         airport: airport, 
                         howMany: 1,
                     }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'NTaf':
                 var airport = 'KSFO';
-                it('looks up in terminal area forecast for ' + airport, function() {
+                it('looks up in terminal area forecast for ' + airport, function(done) {
                     client.NTaf(airport, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'RegisterAlertEndpoint':
                 var address = 'http://www.example.com';
-                it('registers alert endpoint for ' + address, function() {
+                it('registers alert endpoint for ' + address, function(done) {
                     client.RegisterAlertEndpoint({
                         address: address, 
                         format_type: 'json/post',
                     }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
@@ -551,13 +595,14 @@ for(var i in tests) {
             case 'RoutesBetweenAirports':
                 var origin = 'KSFO';
                 var destination = 'KLAX';
-                it('looks up routes between airports ' + origin + ' and ' + destination, function() {
+                it('looks up routes between airports ' + origin + ' and ' + destination, function(done) {
                     client.RoutesBetweenAirports({
                         origin: origin, 
                         destination: destination,
                     }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
@@ -565,7 +610,7 @@ for(var i in tests) {
             case 'RoutesBetweenAirportsEx':
                 var origin = 'KSFO';
                 var destination = 'KLAX';
-                it('looks up detailed routes between airports ' + origin + ' and ' + destination, function() {
+                it('looks up detailed routes between airports ' + origin + ' and ' + destination, function(done) {
                     client.RoutesBetweenAirportsEx({
                         origin: origin, 
                         destination: destination,
@@ -573,19 +618,21 @@ for(var i in tests) {
                     }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'Scheduled':
                 var airport = 'KSFO';
-                it('looks up scheduled flights for ' + airport, function() {
+                it('looks up scheduled flights for ' + airport, function(done) {
                     client.Scheduled({
                         airport: airport, 
                         howMany: 1,
                     }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
@@ -601,25 +648,27 @@ for(var i in tests) {
                 for(var i in searchParameters) {
                     var parameters = searchParameters[i];
 
-                    it('looks up flights by parameters ' + JSON.stringify(parameters), function() {
+                    it('looks up flights by parameters ' + JSON.stringify(parameters), function(done) {
                         client.Search({
                             parameters: parameters,
                             howMany: 1,
                         }, function(err, result) {
                             expect(err).to.be.null;
                             expect(result).to.not.be.null;
+                        done();
                         });
                     });
                 }
 
                 var query = '-destination KLAX -prefix H';
-                it('looks up flights by query ' + query, function() {
+                it('looks up flights by query ' + query, function(done) {
                     client.Search({
                         query: '-destination KLAX -prefix H',
                         howMany: 1,
                     }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
@@ -638,13 +687,14 @@ for(var i in tests) {
 
                 for(var i in inFlightQueries) {
                     var query = inFlightQueries[i][0];
-                    it('looks up in flight information by query ' + query, function() {
+                    it('looks up in flight information by query ' + query, function(done) {
                         client.SearchBirdseyeInFlight({
                             query: query,
                             howMany: 1,
                         }, function(err, result) {
                             expect(err).to.be.null;
                             expect(result).to.not.be.null;
+                            done();
                         });
                     });
                 }
@@ -661,7 +711,7 @@ for(var i in tests) {
 
                 for(var i in positionQueries) {
                     var query = positionQueries[i][0];
-                    it('looks up in flight information by position query ' + query, function() {
+                    it('looks up in flight information by position query ' + query, function(done) {
                         client.SearchBirdseyePositions({
                             query: query,
                             uniqueFlights: true,
@@ -669,6 +719,7 @@ for(var i in tests) {
                         }, function(err, result) {
                             expect(err).to.be.null;
                             expect(result).to.not.be.null;
+                            done();
                         });
                     });
                 }
@@ -676,13 +727,14 @@ for(var i in tests) {
 
             case 'SearchCount':
                 var query = '-destination KLAX -prefix H';
-                it('looks up and counts flights by query ' + query, function() {
+                it('looks up and counts flights by query ' + query, function(done) {
                     client.SearchCount({
                         query: query,
                         howMany: 1,
                     }, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
@@ -693,40 +745,44 @@ for(var i in tests) {
 
             case 'SetMaximumResultSize':
                 var maxResultSize = 100;
-                it('sets maximum result size to ' + maxResultSize, function() {
+                it('sets maximum result size to ' + maxResultSize, function(done) {
                     client.SetMaximumResultSize(maxResultSize, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'Taf':
                 var airport = 'KSFO';
-                it('looks up terminal area forecast for ' + airport, function() {
+                it('looks up terminal area forecast for ' + airport, function(done) {
                     client.Taf(airport, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'TailOwner':
                 var ident = 'N415PW';
-                it('looks up owner by tail number ' + ident, function() {
+                it('looks up owner by tail number ' + ident, function(done) {
                     client.TailOwner(ident, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
 
             case 'ZipcodeInfo':
                 var zipcode = '95060';
-                it('looks up zipcode information for ' + zipcode, function() {
+                it('looks up zipcode information for ' + zipcode, function(done) {
                     client.ZipcodeInfo(zipcode, function(err, result) {
                         expect(err).to.be.null;
                         expect(result).to.not.be.null;
+                        done();
                     });
                 });
                 break;
