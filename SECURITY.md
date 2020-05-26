@@ -2,20 +2,16 @@
 
 ## Supported Versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
-
 | Version | Supported          |
 | ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+| 1.0.x   | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
-Use this section to tell people how to report a vulnerability.
+For any security vulnerabilities, please open an issue here:  https://github.com/icedawn/flightaware.js/issues
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+This project has automated security vulnerability checks which are routinely monitored and applied.
+For manually submitted vulnerability issues, once verified, a branch for the issue will be created, and
+once the issue is resolved, a pull request will be created to merge it into the master branch.
+
+Please feel free to submit pull requests on your own for security vulnerabilities.
