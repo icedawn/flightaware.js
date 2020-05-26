@@ -57,7 +57,7 @@ FlightAware.prototype._request = function(method, data, callback) {
             }
             else {
                 var results = null;
-                var err = null;
+                err = null;
                 try {
                     var json = JSON.parse(body);
                     results = json[method + 'Result'];
