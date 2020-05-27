@@ -340,7 +340,8 @@ FlightAware.prototype.Arrived = function(query, callback) {
  *  callback        function    async completion callback
  *
  * Returns:
- *  undefined
+ *  0 if aircraft ident is not blocked, or if ident is unknown or invalid.
+ *  1 if aircraft ident is valid and blocked
  *
  * Async callback:  callback(err, result)
  *  err             object      undefined or error information
@@ -474,13 +475,8 @@ FlightAware.prototype.DecodeRoute = function(query, callback) {
  *  result          int         1=success
  */
 FlightAware.prototype.DeleteAlert = function(alertId, callback) {
-    if(alertId) {
-        var query = { 'alert_id' : alertId };
-        this._request("DeleteAlert", query, callback)
-    }
-    else {
-        callback('Missing alertId', null);
-    }
+    var query = { 'alert_id' : alertId };
+    this._request("DeleteAlert", query, callback)
 };
 
 /*
