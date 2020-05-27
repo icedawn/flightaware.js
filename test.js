@@ -1,12 +1,14 @@
+/* eslint no-console: ["error", { allow: ["log", "warn", "error"] }] */
+
 // Local developer configuration ...
 var config = require('./config');
 var expect = require("chai").expect;
 var FlightAware = require('./flightaware');
-var verbose = false;
+var verbose = true;
 var client = new FlightAware();
 
 describe('FlightAware constructor', function() {
-    it('creates a client object', function(done) {
+    it('creates a client object', (done) => {
         expect(client).to.not.be.null;
         expect(client.username).to.be.undefined;
         expect(client.apiKey).to.be.undefined;
@@ -15,7 +17,7 @@ describe('FlightAware constructor', function() {
 });
 
 describe('setCredentials', function() {
-    it('sets the FlightAware username and api key', function(done) {
+    it('sets the FlightAware username and api key', (done) => {
         client.setCredentials(config.username, config.apiKey);
         expect(client.username).to.equal(config.username);
         expect(client.apiKey).to.equal(config.apiKey);
@@ -69,608 +71,669 @@ var tests = [
     'Taf',
     'TailOwner',
     'ZipcodeInfo',
-];
+]
 
-for(var i in tests) {
+const _t = {
+    'AircraftType': (aircraftType) => {
+        it('looks up ' + aircraftType + ' aircraft', (done) => {
+            client.AircraftType(aircraftType, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                expect(result).to.not.be.undefined
+                expect(result).to.contain.all.keys(['manufacturer', 'type', 'description'])
+                done()
+            })
+        })
+    },
+    'AirlineFlightInfo': (faFlightID) => {
+        it('looks up flight ID '+ faFlightID, (done) => {
+            client.AirlineFlightInfo(faFlightID, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                if(result) expect(result).to.contain.all.keys(['ident'])
+                done()
+            })
+        })
+    },
+    'AirlineFlightSchedules': (params) => {
+        it(`looks up airline flight schedules: ${JSON.stringify(params)}`, (done) => {
+            client.AirlineFlightSchedules(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'AirlineInfo': (airlineCode) => {
+        it(`looks up airline information for ${airlineCode}`, (done) => {
+            client.AirlineInfo(airlineCode, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                done()
+            })
+        })
+    },
+    'AirlineInsight': (params) => {
+        it(`looks up airline information for route ${JSON.stringify(params)}`, (done) => {
+            client.AirlineInsight(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'AirportInfo': (origin) => {
+        it(`looks up airport information for ${origin}`, (done) => {
+            client.AirportInfo(origin, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'AllAirlines': () => {
+        it('looks up all airline information', (done) => {
+            client.AllAirlines((err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'AllAirports': () => {
+        it('looks up all airport information', (done) => {
+            client.AllAirports((err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'Arrived': (params) => {
+        it(`looks up arrival information for ${JSON.stringify(params)}`, (done) => {
+            client.Arrived(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'BlockIdentCheck': (ident) => {
+        it(`looks up block ident for ${JSON.stringify(ident)}`, (done) => {
+            client.BlockIdentCheck(ident, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'CountAirportOperations': (origin) => {
+        it(`counts airport operations for ${origin}`, (done) => {
+            client.CountAirportOperations(origin, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'CountAllEnrouteAirlineOperations': () => {
+        it('counts all enroute airline operations', (done) => {
+            client.CountAllEnrouteAirlineOperations((err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'DecodeFlightRoute': (faFlightID) => {
+        it(`decodes flight route for ${JSON.stringify(faFlightID)}`, (done) => {
+            client.DecodeFlightRoute(faFlightID, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'DecodeRoute': (params) => {
+        it(`decodes route between ${JSON.stringify(params)}`, (done) => {
+            client.DecodeRoute(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'DeleteAlert': (alertId) => {
+        it(`deletes an alert: ${JSON.stringify(alertId)}`, (done) => {
+            client.DeleteAlert(alertId, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                done()
+            })
+        })
+    },
+    'Departed': (params) => {
+        it(`looks up flights departing from an airport ${JSON.stringify(params)}`, (done) => {
+            client.Departed(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'FleetArrived': (params) => {
+        it(`looks up an airline's flights recently arrived ${JSON.stringify(params)}`, (done) => {
+            client.FleetArrived(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'FleetScheduled': (params) => {
+        it(`looks up an airline's flights scheduled to arrive ${JSON.stringify(params)}`, (done) => {
+            client.FleetScheduled(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'FlightInfo': (params) => {
+        it(`looks up flight information for ${JSON.stringify(params)}`, (done) => {
+            client.FlightInfo(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'FlightInfoEx': (params) => {
+        it(`looks up extended flight information for ${JSON.stringify(params)}`, (done) => {
+            client.FlightInfoEx(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'GetAlerts': () => {
+        it('get alerts registered to the current user account', (done) => {
+            client.GetAlerts((err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'GetFlightID': (params) => {
+        it(`looks up a flight for ${JSON.stringify(params)}`, (done) => {
+            client.GetFlightID(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'GetHistoricalTrack': (faFlightID) => {
+        it(`looks up a historical track for ${JSON.stringify(faFlightID)}`, (done) => {
+            client.GetHistoricalTrack(faFlightID, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'GetLastTrack': (ident) => {
+        it(`looks up last track for ${JSON.stringify(ident)}`, (done) => {
+            client.GetLastTrack(ident, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'InboundFlightInfo': (faFlightID) => {
+        it(`looks up inbound flight info for ${JSON.stringify(faFlightID)}`, (done) => {
+            client.InboundFlightInfo(faFlightID, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'InFlightInfo': (ident) => {
+        it(`looks up in flight information for ${JSON.stringify(ident)}`, (done) => {
+            client.InFlightInfo(ident, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'LatLongsToDistance': (params) => {
+        it(`computes distance between lat/long points: ${JSON.stringify(params)}`, (done) => {
+            client.LatLongsToDistance(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'LatLongsToHeading': (params) => {
+        it(`computes heading between lat/long points: ${JSON.stringify(params)}`, (done) => {
+            client.LatLongsToHeading(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'MapFlight': (params) => {
+        it(`creates flight image for: ${JSON.stringify(params)}`, (done) => {
+            client.MapFlight(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'MapFlightEx': (params) => {
+        it(`creates detailed flight image for: ${JSON.stringify(params)}`, (done) => {
+            client.MapFlightEx(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'Metar': (airport) => {
+        it(`looks up weather for airport ${JSON.stringify(airport)}`, (done) => {
+            client.Metar(airport, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'MetarEx': (params) => {
+        it(`looks up detailed weather for airport: ${JSON.stringify(params)}`, (done) => {
+            client.MetarEx(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'NTaf': (airport) => {
+        it(`looks up in terminal area forecast for airport: ${JSON.stringify(airport)}`, (done) => {
+            client.NTaf(airport, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'RegisterAlertEndpoint': (params) => {
+        it(`registers alert endpoint for: ${JSON.stringify(params)}`, (done) => {
+            client.RegisterAlertEndpoint(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'RoutesBetweenAirports': (params) => {
+        it(`looks up routes between airports: ${JSON.stringify(params)}`, (done) => {
+            client.RoutesBetweenAirports(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'RoutesBetweenAirportsEx': (params) => {
+        it(`looks up detailed routes between airports: ${JSON.stringify(params)}`, (done) => {
+            client.RoutesBetweenAirportsEx(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'Scheduled': (params) => {
+        it(`looks up scheduled flights for airport: ${JSON.stringify(params)}`, (done) => {
+            client.Scheduled(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'Search': (params) => {
+        it(`looks up flights by parameters: ${JSON.stringify(params)}`, (done) => {
+            client.Search(params,(err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+            done()
+            })
+        })
+    },
+    'SearchBirdseyeInFlight': (params) => {
+        it(`looks up in flight information by query: ${JSON.stringify(params)}`, (done) => {
+            client.SearchBirdseyeInFlight(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'SearchBirdseyePositions': (params) => {
+        it(`looks up in flight information by position query: ${JSON.stringify(params)}`, (done) => {
+            client.SearchBirdseyePositions(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'SearchCount': (params) => {
+        it(`looks up and counts flights by query: ${JSON.stringify(params)}`, (done) => {
+            client.SearchCount(params, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'SetMaximumResultSize': (maxResultSize) => {
+        it(`sets maximum result size to ${JSON.stringify(maxResultSize)}`, (done) => {
+            client.SetMaximumResultSize(maxResultSize, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'Taf': (airport) => {
+        it(`looks up terminal area forecast for: ${JSON.stringify(airport)}`, (done) => {
+            client.Taf(airport, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'TailOwner': (ident) => {
+        it(`looks up owner by tail number: ${JSON.stringify(ident)}`, (done) => {
+            client.TailOwner(ident, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    },
+    'ZipcodeInfo': (zipcode) => {
+        it(`looks up zipcode information for: ${JSON.stringify(zipcode)}`, (done) => {
+            client.ZipcodeInfo(zipcode, (err, result) => {
+                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
+                expect(err).to.be.null
+                expect(result).to.not.be.null
+                done()
+            })
+        })
+    }
+}
+
+for(const test of tests) {
     
-    var test = tests[i];
-
     describe(test, function() {
         switch(test) {
             case 'AircraftType':
-                it('looks up GALX aircraft', function(done) {
-                    client.AircraftType('GALX', function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        expect(result).to.contain.all.keys(['manufacturer', 'type', 'description']);
-                        done();
-                    });
-                });
+                _t[test]('GALX')
+                _t[test]('BOGUS AIRCRAFT TYPE')
                 break;
 
             case 'AirlineFlightInfo':
-                var faFlightID = 'N415PW@1442008560';
-                it('looks up flight ID '+ faFlightID, function(done) {
-                    client.AirlineFlightInfo('N415PW@1442008560', function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        expect(result).to.contain.all.keys(['ident']);
-                        expect(result.ident).to.equal('N415PW');
-                        done();
-                    });
-                });
+                _t[test]('N415PW@1442008560')
+                _t[test]('BOGUS FLIGHT ID')
                 break;
 
             case 'AirlineFlightSchedules':
-                it('looks up airline flight schedules from KSJC for the next 24 hours', function(done) {
-                    client.AirlineFlightSchedules({
-                        origin: 'KSJC',
-                        howMany: 1
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        if(result && result.data) {
-                            var schedules = result.data;
-                            for(var i in schedules) {
-                                if(verbose) console.log('schedule = ', schedules[i]);
-                            }
-                        }
-                        done();
-                    });
-                });
-
                 var now = Math.floor(Date.now()/1000);
-
-                it('looks up airline flight schedules from KSJC for the next hour', function(done) {
-                    client.AirlineFlightSchedules({
-                        origin: 'KSJC',
-                        startDate: now,
-                        endDate: now + 1*60*60,
-                        howMany: 1
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        if(result && result.data) {
-                            var schedules = result.data;
-                            for(var i in schedules) {
-                                if(verbose) console.log('schedule = ', schedules[i]);
-                            }
-                        }
-                        done();
-                    });
-                });
-
-                it('looks up airline flight schedules from KSJC for the past hour', function(done) {
-                    client.AirlineFlightSchedules({
-                        origin: 'KSJC',
-                        startDate: now - 1*60*60,
-                        endDate: now,
-                        howMany: 1
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        if(result && result.data) {
-                            var schedules = result.data;
-                            for(var i in schedules) {
-                                if(verbose) console.log('schedule = ', schedules[i]);
-                            }
-                        }
-                        done();
-                    });
-                });
+                _t[test]({ origin: 'KSJC', howMany: 1 })
+                _t[test]({ origin: 'KSJC', startDate: now, EndDate: now + 1*60*60, howMany: 1 })
+                _t[test]({ origin: 'KSJC', startDate: now-1*60*60, EndDate: now, howMany: 1 })
+                _t[test]({ howMany: 1 })
+                _t[test]({})
+                _t[test]({ origin: 'BOGUS AIRPORT' })
                 break;
 
             case 'AirlineInfo':
-                it('looks up airline information', function(done) {
-                    client.AirlineInfo('UAL', function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]('UAL')
+                _t[test]('BOGUS AIRLINE')
                 break;
 
+            // XXX:  this API does not appear to be working ...
             case 'AirlineInsight':
-                var origin = 'SJC';
-                var destination = 'LAX';
-                it('looks up airline information for route ' + origin + ' to ' + destination + ' (default report)', function(done) {
-                    client.AirlineInsight({ 
-                        origin: origin,
-                        destination: destination,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        if(verbose) console.log('err, result = ', err, result);
-                        if(result && result.data) {
-                            var insights = result.data;
-                            for(var i in insights) {
-                                if(verbose) console.log('insight = ', insights[i]);
-                            }
-                        }
-                        done();
-                    });
-                });
-                it('looks up airline information for route ' + origin + ' to ' + destination + ' (alternate route popularity)', function(done) {
-                    client.AirlineInsight({ 
-                        origin: origin,
-                        destination: destination,
-                        reportType: 1,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        if(verbose) console.log('err, result = ', err, result);
-                        if(result && result.data) {
-                            var insights = result.data;
-                            for(var i in insights) {
-                                if(verbose) console.log('insight = ', insights[i]);
-                            }
-                        }
-                        done();
-                    });
-                });
+                _t[test]({ origin: 'KSJC', destination: 'KLAX' })
+                _t[test]({ origin: 'SJC', destination: 'LAX', reportType: 1 })
+                _t[test]({ origin: 'SJC', destination: 'LAX', reportType: 2 })
+                _t[test]({ origin: 'SJC', destination: 'LAX', reportType: 3 })
+                _t[test]({ origin: 'SJC', destination: 'LAX', reportType: 4 })
+                _t[test]({ origin: 'BOGUS AIRPORT', destination: 'BOGUS AIRPORT' })
                 break;
 
             case 'AirportInfo':
-                var origin = 'SFO';
-                it('looks up airport information for ' + origin, function(done) {
-                    client.AirportInfo(origin, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]('SFO')
+                _t[test]('BOGUS AIRPORT')
                 break;
 
             case 'AllAirlines':
-                it('looks up all airline information', function(done) {
-                    client.AllAirlines(function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]()
                 break;
 
             case 'AllAirports':
-                it('looks up airline information', function(done) {
-                    client.AllAirports(function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]()
                 break;
 
             case 'Arrived':
-                var origin = 'KSFO';
-                it('looks up arrival information for ' + origin, function(done) {
-                    client.Arrived({ airport: origin, howMany: 1 }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]({ airport: 'KSFO', howMany: 1 })
+                _t[test]({ airport: 'KSFO' })
+                _t[test]({ airport: 'BOGUS AIRPORT' })
+                _t[test]({})
                 break;
 
             case 'BlockIdentCheck':
-                var ident = 'N415PW';
-                it('looks up block ident for ' + ident, function(done) {
-                    client.BlockIdentCheck(ident, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]('N415PW')
+                _t[test]('BOGUS AIRCRAFT IDENT')
+                _t[test]('')
                 break;
 
             case 'CountAirportOperations':
-                var origin = 'KSFO';
-                it('counts airport operations for ' + origin, function(done) {
-                    client.CountAirportOperations(origin, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]('KSFO')
+                _t[test]('BOGUS AIRPORT')
+                _t[test]('')
                 break;
 
             case 'CountAllEnrouteAirlineOperations':
-                it('counts all enroute airline operations', function(done) {
-                    client.CountAllEnrouteAirlineOperations(function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]()
                 break;
 
             case 'DecodeFlightRoute':
-                var faFlightID = 'N415PW@1442008560';
-                it('decodes flight route for ' + faFlightID, function(done) {
-                    client.DecodeFlightRoute(faFlightID, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]('N415PW@1442008560')
+                _t[test]('BOGUS FLIGHT ID')
                 break;
 
             case 'DecodeRoute':
-                var origin = 'KSQL';
-                var route = 'SJC V334 SAC SWR';
-                var destination = 'KTRK';
-                it('decodes route between ' + origin + ' and ' + destination, function(done) {
-                    client.DecodeRoute({ 
-                        origin: origin, 
-                        route: route, 
-                        destination: destination
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]({ origin: 'KSQL', route: 'SJC V334 SAC SWR', destination: 'KTRK' })
                 break;
 
             case 'DeleteAlert':
-                it('deletes an alert', function(done) {
-                    client.DeleteAlert('1', function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
-                it('deletes an alert using a null ID', function(done) {
-                    client.DeleteAlert(null, function(err, result) {
-                        expect(err).to.be.not.null;
-                        expect(result).to.be.null;
-                        done();
-                    });
-                });
+                _t[test]('1')
+                _t[test](null)
                 break;
 
             case 'Departed':
-                var origin = 'KSFO';
-                it('looks up airline information', function(done) {
-                    client.Departed({ 
-                        airport: origin,
-                        howMany: 1
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]({ airport: 'KSFO', howMany: 1 })
+                _t[test]({ airport: 'BOGUS AIRPORT', howMany: 1 })
+                _t[test]({})
                 break;
 
             case 'FleetArrived':
-                it('looks up airline information', function(done) {
-                    client.FleetArrived({ 
-                        fleet: "URF", 
-                        howMany: 1 
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]({ fleet: 'UAL', howMany: 1 })
+                _t[test]({ fleet: 'BOGUS FLEET', howMany: 1 })
+                _t[test]({})
                 break;
 
             case 'FleetScheduled':
-                var fleet = 'URF';
-                it('looks up airline information', function(done) {
-                    client.FleetScheduled({ 
-                        fleet: fleet, 
-                        howMany: 1 
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]({ fleet: 'UAL', howMany: 1 })
+                _t[test]({ fleet: 'BOGUS FLEET', howMany: 1 })
+                _t[test]({})
                 break;
 
             case 'FlightInfo':
-                var ident = 'N415PW';
-                it('looks up flight information for ' + ident, function(done) {
-                    client.FlightInfo({ 
-                        ident: ident,
-                        howMany: 1
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]({ ident: 'N415PW', howMany: 1 })
+                _t[test]({ ident: 'BOGUS AIRCRAFT IDENT', howMany: 1 })
+                _t[test]({})
                 break;
 
             case 'FlightInfoEx':
-                var ident = 'N415PW';
-                it('looks up flight information for ' + ident, function(done) {
-                    client.FlightInfoEx({ 
-                        ident: ident, 
-                        howMany: 1
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]({ ident: 'N415PW', howMany: 1 })
+                _t[test]({ ident: 'BOGUS AIRCRAFT IDENT', howMany: 1 })
+                _t[test]({})
                 break;
 
             case 'GetAlerts':
-                it('setup offline alerts', function(done) {
-                    client.GetAlerts(function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]()
                 break;
 
             case 'GetFlightID':
-                var ident = 'N415PW';
-                var departure = '1442008560' ;
-                it('looks up a flight for ' + ident, function(done) {
-                    client.GetFlightID({ 
-                        ident: 'N415PW', 
-                        departureTime: '1442008560' 
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]({ ident: 'N415PW', departureTime: '1442008560' })
+                _t[test]({ ident: 'BOGUS AIRCRAFT IDENT', departureTime: '1442008560' })
+                _t[test]({})
                 break;
 
             case 'GetHistoricalTrack':
-                var faFlightID = 'N415PW@1442008560' ;
-                it('looks up a historical track for ' + faFlightID, function(done) {
-                    client.GetHistoricalTrack(faFlightID, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]('N415PW@1442008560')
+                _t[test]('BOGUS TRACK ID')
+                _t[test]()
                 break;
 
+            // XXX:  this API does not appear to be working ...
             case 'GetLastTrack':
-                var ident = 'N415PW';
-                it('looks up last track for ' + ident, function(done) {
-                    client.GetLastTrack(ident, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]('N415PW')
+                _t[test]('BOGUS AIRCRAFT ID')
+                _t[test]()
                 break;
 
             case 'InboundFlightInfo':
-                var faFlightID = 'N415PW-1457118526-1-0';
-                it('looks up inbound flight info for ' + faFlightID, function(done) {
-                    client.InboundFlightInfo(faFlightID, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]('N415PW-1457118526-1-0')
                 break;
 
             case 'InFlightInfo':
-                var ident = 'N415PW';
-                it('looks up in flight information for ' + ident, function(done) {
-                    client.InFlightInfo(ident, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]('N415PW')
                 break;
 
             case 'LatLongsToDistance':
-                var lat1 = 37.3626667;
-                var lon1 = -121.9291111;
-                var lat2 = 33.9425003;
-                var lon2 = -118.4080736;
-                it('computes distance between lat/long points', function(done) {
-                    client.LatLongsToDistance({ 
-                        lat1: lat1,
-                        lon1: lon1,
-                        lat2: lat2,
-                        lon2: lon2,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]({ lat1: 37.3626667, lon1: -121.9291111, lat2: 33.9425003, lon2: -118.4080736 })
                 break;
 
             case 'LatLongsToHeading':
-                var lat1 = 37.3626667;
-                var lon1 = -121.9291111;
-                var lat2 = 33.9425003;
-                var lon2 = -118.4080736;
-                it('computes heading between lat/long points', function(done) {
-                    client.LatLongsToHeading({ 
-                        lat1: lat1,
-                        lon1: lon1,
-                        lat2: lat2,
-                        lon2: lon2,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]({ lat1: 37.3626667, lon1: -121.9291111, lat2: 33.9425003, lon2: -118.4080736 })
                 break;
 
             case 'MapFlight':
-                var ident = 'N415PW';
-                var mapHeight = 32;
-                var mapWidth = 32;
-                it('creates flight image for ' + ident, function(done) {
-                    client.MapFlight({
-                        ident: ident,
-                        mapHeight: mapHeight,
-                        mapWidth: mapWidth,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]({ ident: 'N415PW', mapHeight: 32, mapWidth: 32 })
                 break;
 
             case 'MapFlightEx':
-                var faFlightID = 'SKW2494@1442040480';
-                var mapHeight = 32;
-                var mapWidth = 32;
-                it('creates detailed flight image for ' + faFlightID, function(done) {
-                    client.MapFlightEx({
-                        faFlightID: faFlightID,
-                        mapHeight: mapHeight,
-                        mapWidth: mapWidth,
-                        show_data_blocks: true,
-                        show_airports: true,
-                        airports_expand_view: true,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]({ faFlightID: 'SKW2494@1442040480', mapHeight: 32, mapWidth: 32, show_data_blocks: true, show_airports: true, airports_expand_view: true })
                 break;
 
             case 'Metar':
-                var airport = 'KSFO';
-                it('looks up weather for airport ' + airport, function(done) {
-                    client.Metar(airport, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]('KSFO')
+                _t[test]('BOGUS AIRPORT ID')
+                _t[test]()
                 break;
 
             case 'MetarEx':
-                var airport = 'KSFO';
-                it('looks up detailed weather for airport ' + airport, function(done) {
-                    client.MetarEx({
-                        airport: airport, 
-                        howMany: 1,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]({ airport: 'KSFO', howMany: 1 })
+                _t[test]({ airport: 'BOGUS AIRPORT ID', howMany: 1 })
+                _t[test]({})
                 break;
 
             case 'NTaf':
-                var airport = 'KSFO';
-                it('looks up in terminal area forecast for ' + airport, function(done) {
-                    client.NTaf(airport, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]('KSFO')
+                _t[test]('BOGUS AIRPORT ID')
+                _t[test]()
                 break;
 
             case 'RegisterAlertEndpoint':
-                var address = 'http://www.example.com';
-                it('registers alert endpoint for ' + address, function(done) {
-                    client.RegisterAlertEndpoint({
-                        address: address, 
-                        format_type: 'json/post',
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]({ address: 'http://www.example.com', format_type: 'json/post' })
                 break;
 
             case 'RoutesBetweenAirports':
-                var origin = 'KSFO';
-                var destination = 'KLAX';
-                it('looks up routes between airports ' + origin + ' and ' + destination, function(done) {
-                    client.RoutesBetweenAirports({
-                        origin: origin, 
-                        destination: destination,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]({ origin: 'KSFO', destination: 'KLAX' })
                 break;
 
             case 'RoutesBetweenAirportsEx':
-                var origin = 'KSFO';
-                var destination = 'KLAX';
-                it('looks up detailed routes between airports ' + origin + ' and ' + destination, function(done) {
-                    client.RoutesBetweenAirportsEx({
-                        origin: origin, 
-                        destination: destination,
-                        howMany: 1,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]({ origin: 'KSFO', destination: 'KLAX', howMany: 1 })
                 break;
 
+            // XXX:  this API does not appear to be working ...
             case 'Scheduled':
-                var airport = 'KSFO';
-                it('looks up scheduled flights for ' + airport, function(done) {
-                    client.Scheduled({
-                        airport: airport, 
-                        howMany: 1,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]({ airport: 'KSFO', howMany: 1 })
                 break;
 
             case 'Search':
-                var searchParameters = [
-                    { "type" : "B77*" },
-                    { "belowAltitude" : 100, "aboveGroundspeed" : 200 },
-                    { "destination" : "KLAX", "prefix" : "H" },
-                    { "idents" : "UAL*", "type" : "B73*" },
-                ];
-
-                for(var i in searchParameters) {
-                    var parameters = searchParameters[i];
-
-                    it('looks up flights by parameters ' + JSON.stringify(parameters), function(done) {
-                        client.Search({
-                            parameters: parameters,
-                            howMany: 1,
-                        }, function(err, result) {
-                            expect(err).to.be.null;
-                            expect(result).to.not.be.null;
-                        done();
-                        });
-                    });
-                }
-
-                var query = '-destination KLAX -prefix H';
-                it('looks up flights by query ' + query, function(done) {
-                    client.Search({
-                        query: '-destination KLAX -prefix H',
-                        howMany: 1,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]({ parameters: { type: "B77*" }, howMany: 1 })
+                _t[test]({ parameters: { belowAltitude: 100, "aboveGroundspeed" : 200 }, howMany: 1 })
+                _t[test]({ parameters: { destination: "KLAX", "prefix" : "H" }, howMany: 1 })
+                _t[test]({ parameters: { idents: "UAL*", "type" : "B77*" }, howMany: 1 })
+                _t[test]({ query: '-destination KLAX -prefix H', howMany: 1 })
                 break;
 
             case 'SearchBirdseyeInFlight':
@@ -685,18 +748,8 @@ for(var i in tests) {
                     [ "{> lastPositionTime 1278610758} {true inAir} {!= physClass P} {> circles 3}", "All flights that have a reported position after a specified epoch time, are still in the air, are not piston class, and have made several circular flight patterns (potentially in distress)" ],
                 ];
 
-                for(var i in inFlightQueries) {
-                    var query = inFlightQueries[i][0];
-                    it('looks up in flight information by query ' + query, function(done) {
-                        client.SearchBirdseyeInFlight({
-                            query: query,
-                            howMany: 1,
-                        }, function(err, result) {
-                            expect(err).to.be.null;
-                            expect(result).to.not.be.null;
-                            done();
-                        });
-                    });
+                for(const q of inFlightQueries) {
+                    describe(`SearchBirdseyeInFlight: ${q[1]}`, (query=q[0]) => _t[test]({ query: query, howMany: 1 }))
                 }
                 break;
 
@@ -709,34 +762,13 @@ for(var i in tests) {
                     [ "{= fp N415PW-1442008613-adhoc-0}", "All flight positions for a specific flight identifier (faFlightID)" ],
                 ];
 
-                for(var i in positionQueries) {
-                    var query = positionQueries[i][0];
-                    it('looks up in flight information by position query ' + query, function(done) {
-                        client.SearchBirdseyePositions({
-                            query: query,
-                            uniqueFlights: true,
-                            howMany: 1,
-                        }, function(err, result) {
-                            expect(err).to.be.null;
-                            expect(result).to.not.be.null;
-                            done();
-                        });
-                    });
+                for(const q of positionQueries) {
+                    describe(`SearchBirdseyePositions: ${q[1]}`, (query=q[0]) => _t[test]({ query: query, uniqueFlights: true, howMany: 1 }))
                 }
                 break;
 
             case 'SearchCount':
-                var query = '-destination KLAX -prefix H';
-                it('looks up and counts flights by query ' + query, function(done) {
-                    client.SearchCount({
-                        query: query,
-                        howMany: 1,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]({ query: '-destination KLAX -prefix H', howMany: 1 })
                 break;
 
             case 'SetAlert':
@@ -744,51 +776,29 @@ for(var i in tests) {
                 break;
 
             case 'SetMaximumResultSize':
-                var maxResultSize = 100;
-                it('sets maximum result size to ' + maxResultSize, function(done) {
-                    client.SetMaximumResultSize(maxResultSize, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test](100)
                 break;
 
             case 'Taf':
-                var airport = 'KSFO';
-                it('looks up terminal area forecast for ' + airport, function(done) {
-                    client.Taf(airport, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]('KSFO')
+                _t[test]('BOGUS AIRPORT ID')
+                _t[test]()
                 break;
 
             case 'TailOwner':
-                var ident = 'N415PW';
-                it('looks up owner by tail number ' + ident, function(done) {
-                    client.TailOwner(ident, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]('N415PW')
+                _t[test]('BOGUS AIRCRAFT ID')
+                _t[test]()
                 break;
 
             case 'ZipcodeInfo':
-                var zipcode = '95060';
-                it('looks up zipcode information for ' + zipcode, function(done) {
-                    client.ZipcodeInfo(zipcode, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                _t[test]('95060')
+                _t[test]('BOGUS ZIPCODE')
+                _t[test]()
                 break;
 
             default:
-                console.log("Unimplemented API test:", tests[i]);
+                console.log("Unimplemented API test:", test);
                 break;
         }
     });
