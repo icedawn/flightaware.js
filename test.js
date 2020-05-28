@@ -74,25 +74,30 @@ const _t = {
     'AircraftType': (aircraftType) => {
         it(`looks up aircraft ${JSON.stringify(aircraftType)}`, (done) => {
             client.AircraftType(aircraftType, (err, result) => {
-                if(err) return done(err)
-
-                expect(result).to.not.be.null
-                expect(result).to.not.be.undefined
-                expect(result).to.contain.all.keys(['manufacturer', 'type', 'description'])
-
-                return done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    expect(result).to.not.be.undefined
+                    expect(result).to.contain.all.keys(['manufacturer', 'type', 'description'])
+                    done()
+                }
             })
         })
     },
     'AirlineFlightInfo': (faFlightID) => {
         it('looks up flight ID '+ faFlightID, (done) => {
             client.AirlineFlightInfo(faFlightID, (err, result) => {
-                if(err) return done(err)
-
-                expect(result).to.not.be.null
-                if(result) expect(result).to.contain.all.keys(['ident'])
-
-                return done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    expect(result).to.not.be.undefined
+                    expect(result).to.contain.all.keys(['ident'])
+                    done()
+                }
             })
         })
     },
