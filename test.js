@@ -1,11 +1,10 @@
 /* eslint no-console: ["error", { allow: ["log", "warn", "error"] }] */
+const config = require('./config')
+const expect = require("chai").expect
+const FlightAware = require('./flightaware')
 
-// Local developer configuration ...
-var config = require('./config');
-var expect = require("chai").expect;
-var FlightAware = require('./flightaware');
-var verbose = true;
-var client = new FlightAware();
+var client = new FlightAware()
+client.debug = true
 
 describe('FlightAware constructor', function() {
     it('creates a client object', (done) => {
@@ -30,7 +29,6 @@ var tests = [
     'AirlineFlightInfo',
     'AirlineFlightSchedules',
     'AirlineInfo',
-    'AirlineInsight',
     'AirportInfo',
     'AllAirlines',
     'AllAirports',
@@ -72,456 +70,587 @@ var tests = [
     'TailOwner',
     'ZipcodeInfo',
 ]
-
 const _t = {
     'AircraftType': (aircraftType) => {
         it(`looks up aircraft ${JSON.stringify(aircraftType)}`, (done) => {
             client.AircraftType(aircraftType, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
                 if(err) return done(err)
+
                 expect(result).to.not.be.null
                 expect(result).to.not.be.undefined
                 expect(result).to.contain.all.keys(['manufacturer', 'type', 'description'])
-                done()
+
+                return done()
             })
         })
     },
     'AirlineFlightInfo': (faFlightID) => {
         it('looks up flight ID '+ faFlightID, (done) => {
             client.AirlineFlightInfo(faFlightID, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
+                if(err) return done(err)
+
                 expect(result).to.not.be.null
                 if(result) expect(result).to.contain.all.keys(['ident'])
-                done()
+
+                return done()
             })
         })
     },
     'AirlineFlightSchedules': (params) => {
         it(`looks up airline flight schedules: ${JSON.stringify(params)}`, (done) => {
             client.AirlineFlightSchedules(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'AirlineInfo': (airlineCode) => {
         it(`looks up airline information for ${airlineCode}`, (done) => {
             client.AirlineInfo(airlineCode, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                done()
-            })
-        })
-    },
-    'AirlineInsight': (params) => {
-        it(`looks up airline information for route ${JSON.stringify(params)}`, (done) => {
-            client.AirlineInsight(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'AirportInfo': (origin) => {
         it(`looks up airport information for ${origin}`, (done) => {
             client.AirportInfo(origin, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'AllAirlines': () => {
         it('looks up all airline information', (done) => {
             client.AllAirlines((err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'AllAirports': () => {
         it('looks up all airport information', (done) => {
             client.AllAirports((err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'Arrived': (params) => {
         it(`looks up arrival information for ${JSON.stringify(params)}`, (done) => {
             client.Arrived(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'BlockIdentCheck': (ident) => {
         it(`looks up block ident for ${JSON.stringify(ident)}`, (done) => {
             client.BlockIdentCheck(ident, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'CountAirportOperations': (origin) => {
         it(`counts airport operations for ${origin}`, (done) => {
             client.CountAirportOperations(origin, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'CountAllEnrouteAirlineOperations': () => {
         it('counts all enroute airline operations', (done) => {
             client.CountAllEnrouteAirlineOperations((err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'DecodeFlightRoute': (faFlightID) => {
         it(`decodes flight route for ${JSON.stringify(faFlightID)}`, (done) => {
             client.DecodeFlightRoute(faFlightID, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'DecodeRoute': (params) => {
         it(`decodes route between ${JSON.stringify(params)}`, (done) => {
             client.DecodeRoute(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'DeleteAlert': (alertId) => {
         it(`deletes an alert: ${JSON.stringify(alertId)}`, (done) => {
             client.DeleteAlert(alertId, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'Departed': (params) => {
         it(`looks up flights departing from an airport ${JSON.stringify(params)}`, (done) => {
             client.Departed(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'FleetArrived': (params) => {
         it(`looks up an airline's flights recently arrived ${JSON.stringify(params)}`, (done) => {
             client.FleetArrived(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'FleetScheduled': (params) => {
         it(`looks up an airline's flights scheduled to arrive ${JSON.stringify(params)}`, (done) => {
             client.FleetScheduled(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'FlightInfo': (params) => {
         it(`looks up flight information for ${JSON.stringify(params)}`, (done) => {
             client.FlightInfo(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'FlightInfoEx': (params) => {
         it(`looks up extended flight information for ${JSON.stringify(params)}`, (done) => {
             client.FlightInfoEx(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'GetAlerts': () => {
         it('get alerts registered to the current user account', (done) => {
             client.GetAlerts((err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'GetFlightID': (params) => {
         it(`looks up a flight for ${JSON.stringify(params)}`, (done) => {
             client.GetFlightID(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'GetHistoricalTrack': (faFlightID) => {
         it(`looks up a historical track for ${JSON.stringify(faFlightID)}`, (done) => {
             client.GetHistoricalTrack(faFlightID, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'GetLastTrack': (ident) => {
         it(`looks up last track for ${JSON.stringify(ident)}`, (done) => {
             client.GetLastTrack(ident, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'InboundFlightInfo': (faFlightID) => {
         it(`looks up inbound flight info for ${JSON.stringify(faFlightID)}`, (done) => {
             client.InboundFlightInfo(faFlightID, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'InFlightInfo': (ident) => {
         it(`looks up in flight information for ${JSON.stringify(ident)}`, (done) => {
             client.InFlightInfo(ident, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'LatLongsToDistance': (params) => {
         it(`computes distance between lat/long points: ${JSON.stringify(params)}`, (done) => {
             client.LatLongsToDistance(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'LatLongsToHeading': (params) => {
         it(`computes heading between lat/long points: ${JSON.stringify(params)}`, (done) => {
             client.LatLongsToHeading(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'MapFlight': (params) => {
         it(`creates flight image for: ${JSON.stringify(params)}`, (done) => {
             client.MapFlight(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'MapFlightEx': (params) => {
         it(`creates detailed flight image for: ${JSON.stringify(params)}`, (done) => {
             client.MapFlightEx(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'Metar': (airport) => {
         it(`looks up weather for airport ${JSON.stringify(airport)}`, (done) => {
             client.Metar(airport, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'MetarEx': (params) => {
         it(`looks up detailed weather for airport: ${JSON.stringify(params)}`, (done) => {
             client.MetarEx(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'NTaf': (airport) => {
         it(`looks up in terminal area forecast for airport: ${JSON.stringify(airport)}`, (done) => {
             client.NTaf(airport, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'RegisterAlertEndpoint': (params) => {
         it(`registers alert endpoint for: ${JSON.stringify(params)}`, (done) => {
             client.RegisterAlertEndpoint(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'RoutesBetweenAirports': (params) => {
         it(`looks up routes between airports: ${JSON.stringify(params)}`, (done) => {
             client.RoutesBetweenAirports(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'RoutesBetweenAirportsEx': (params) => {
         it(`looks up detailed routes between airports: ${JSON.stringify(params)}`, (done) => {
             client.RoutesBetweenAirportsEx(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'Scheduled': (params) => {
         it(`looks up scheduled flights for airport: ${JSON.stringify(params)}`, (done) => {
             client.Scheduled(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'Search': (params) => {
         it(`looks up flights by parameters: ${JSON.stringify(params)}`, (done) => {
-            client.Search(params,(err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-            done()
+            client.Search(params, (err, result) => {
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'SearchBirdseyeInFlight': (params) => {
         it(`looks up in flight information by query: ${JSON.stringify(params)}`, (done) => {
             client.SearchBirdseyeInFlight(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    done()
+                }
             })
         })
     },
     'SearchBirdseyePositions': (params) => {
         it(`looks up in flight information by position query: ${JSON.stringify(params)}`, (done) => {
             client.SearchBirdseyePositions(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    expect(result).to.not.be.undefined
+                    expect(result).to.be.an('object')
+                    done()
+                }
             })
         })
     },
     'SearchCount': (params) => {
         it(`looks up and counts flights by query: ${JSON.stringify(params)}`, (done) => {
             client.SearchCount(params, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    expect(result).to.not.be.undefined
+                    expect(result).to.be.a('number')
+                    done()
+                }
             })
         })
     },
     'SetMaximumResultSize': (maxResultSize) => {
         it(`sets maximum result size to ${JSON.stringify(maxResultSize)}`, (done) => {
             client.SetMaximumResultSize(maxResultSize, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    expect(result).to.not.be.undefined
+                    expect(result).to.be.a('number')
+                    done()
+                }
             })
         })
     },
     'Taf': (airport) => {
         it(`looks up terminal area forecast for: ${JSON.stringify(airport)}`, (done) => {
             client.Taf(airport, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    expect(result).to.not.be.undefined
+                    expect(result).to.be.a('string')
+                    done()
+                }
             })
         })
     },
     'TailOwner': (ident) => {
         it(`looks up owner by tail number: ${JSON.stringify(ident)}`, (done) => {
             client.TailOwner(ident, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    expect(result).to.not.be.undefined
+                    expect(result).to.contain.all.keys(['owner', 'location', 'location2', 'website'])
+                    done()
+                }
             })
         })
     },
     'ZipcodeInfo': (zipcode) => {
         it(`looks up zipcode information for: ${JSON.stringify(zipcode)}`, (done) => {
             client.ZipcodeInfo(zipcode, (err, result) => {
-                if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
-                expect(result).to.not.be.null
-                done()
+                if(err) {
+                    done(err)
+                }
+                else {
+                    expect(result).to.not.be.null
+                    expect(result).to.not.be.undefined
+                    expect(result).to.contain.all.keys(['latitude', 'longitude', 'city', 'state', 'county'])
+                    done()
+                }
             })
         })
     }
@@ -533,13 +662,10 @@ for(const test of tests) {
         switch(test) {
             case 'AircraftType':
                 _t[test]('GALX')
-                _t[test]('BOGUS AIRCRAFT TYPE')
-                _t[test]()
                 break;
 
             case 'AirlineFlightInfo':
                 _t[test]('N415PW@1442008560')
-                _t[test]('BOGUS FLIGHT ID')
                 break;
 
             case 'AirlineFlightSchedules':
@@ -548,28 +674,14 @@ for(const test of tests) {
                 _t[test]({ origin: 'KSJC', startDate: now, EndDate: now + 1*60*60, howMany: 1 })
                 _t[test]({ origin: 'KSJC', startDate: now-1*60*60, EndDate: now, howMany: 1 })
                 _t[test]({ howMany: 1 })
-                _t[test]({})
-                _t[test]({ origin: 'BOGUS AIRPORT' })
                 break;
 
             case 'AirlineInfo':
                 _t[test]('UAL')
-                _t[test]('BOGUS AIRLINE')
-                break;
-
-            // XXX:  this API does not appear to be working ...
-            case 'AirlineInsight':
-                _t[test]({ origin: 'KSJC', destination: 'KLAX' })
-                _t[test]({ origin: 'SJC', destination: 'LAX', reportType: 1 })
-                _t[test]({ origin: 'SJC', destination: 'LAX', reportType: 2 })
-                _t[test]({ origin: 'SJC', destination: 'LAX', reportType: 3 })
-                _t[test]({ origin: 'SJC', destination: 'LAX', reportType: 4 })
-                _t[test]({ origin: 'BOGUS AIRPORT', destination: 'BOGUS AIRPORT' })
                 break;
 
             case 'AirportInfo':
                 _t[test]('SFO')
-                _t[test]('BOGUS AIRPORT')
                 break;
 
             case 'AllAirlines':
@@ -583,20 +695,14 @@ for(const test of tests) {
             case 'Arrived':
                 _t[test]({ airport: 'KSFO', howMany: 1 })
                 _t[test]({ airport: 'KSFO' })
-                _t[test]({ airport: 'BOGUS AIRPORT' })
-                _t[test]({})
                 break;
 
             case 'BlockIdentCheck':
                 _t[test]('N415PW')
-                _t[test]('BOGUS AIRCRAFT IDENT')
-                _t[test]('')
                 break;
 
             case 'CountAirportOperations':
                 _t[test]('KSFO')
-                _t[test]('BOGUS AIRPORT')
-                _t[test]('')
                 break;
 
             case 'CountAllEnrouteAirlineOperations':
@@ -605,7 +711,6 @@ for(const test of tests) {
 
             case 'DecodeFlightRoute':
                 _t[test]('N415PW@1442008560')
-                _t[test]('BOGUS FLIGHT ID')
                 break;
 
             case 'DecodeRoute':
@@ -618,33 +723,26 @@ for(const test of tests) {
                 break;
 
             case 'Departed':
+                _t[test]({ airport: 'KSFO' })
+                _t[test]({ airport: 'KSFO', howMany: 1, filter: 'airline', offset: 0 })
+                _t[test]({ airport: 'KSFO', howMany: 1, filter: 'ga' })
                 _t[test]({ airport: 'KSFO', howMany: 1 })
-                _t[test]({ airport: 'BOGUS AIRPORT', howMany: 1 })
-                _t[test]({})
                 break;
 
             case 'FleetArrived':
                 _t[test]({ fleet: 'UAL', howMany: 1 })
-                _t[test]({ fleet: 'BOGUS FLEET', howMany: 1 })
-                _t[test]({})
                 break;
 
             case 'FleetScheduled':
                 _t[test]({ fleet: 'UAL', howMany: 1 })
-                _t[test]({ fleet: 'BOGUS FLEET', howMany: 1 })
-                _t[test]({})
                 break;
 
             case 'FlightInfo':
                 _t[test]({ ident: 'N415PW', howMany: 1 })
-                _t[test]({ ident: 'BOGUS AIRCRAFT IDENT', howMany: 1 })
-                _t[test]({})
                 break;
 
             case 'FlightInfoEx':
                 _t[test]({ ident: 'N415PW', howMany: 1 })
-                _t[test]({ ident: 'BOGUS AIRCRAFT IDENT', howMany: 1 })
-                _t[test]({})
                 break;
 
             case 'GetAlerts':
@@ -653,21 +751,14 @@ for(const test of tests) {
 
             case 'GetFlightID':
                 _t[test]({ ident: 'N415PW', departureTime: '1442008560' })
-                _t[test]({ ident: 'BOGUS AIRCRAFT IDENT', departureTime: '1442008560' })
-                _t[test]({})
                 break;
 
             case 'GetHistoricalTrack':
                 _t[test]('N415PW@1442008560')
-                _t[test]('BOGUS TRACK ID')
-                _t[test]()
                 break;
 
-            // XXX:  this API does not appear to be working ...
             case 'GetLastTrack':
                 _t[test]('N415PW')
-                _t[test]('BOGUS AIRCRAFT ID')
-                _t[test]()
                 break;
 
             case 'InboundFlightInfo':
@@ -696,20 +787,14 @@ for(const test of tests) {
 
             case 'Metar':
                 _t[test]('KSFO')
-                _t[test]('BOGUS AIRPORT ID')
-                _t[test]()
                 break;
 
             case 'MetarEx':
                 _t[test]({ airport: 'KSFO', howMany: 1 })
-                _t[test]({ airport: 'BOGUS AIRPORT ID', howMany: 1 })
-                _t[test]({})
                 break;
 
             case 'NTaf':
                 _t[test]('KSFO')
-                _t[test]('BOGUS AIRPORT ID')
-                _t[test]()
                 break;
 
             case 'RegisterAlertEndpoint':
@@ -724,7 +809,6 @@ for(const test of tests) {
                 _t[test]({ origin: 'KSFO', destination: 'KLAX', howMany: 1 })
                 break;
 
-            // XXX:  this API does not appear to be working ...
             case 'Scheduled':
                 _t[test]({ airport: 'KSFO', howMany: 1 })
                 break;
@@ -782,20 +866,14 @@ for(const test of tests) {
 
             case 'Taf':
                 _t[test]('KSFO')
-                _t[test]('BOGUS AIRPORT ID')
-                _t[test]()
                 break;
 
             case 'TailOwner':
                 _t[test]('N415PW')
-                _t[test]('BOGUS AIRCRAFT ID')
-                _t[test]()
                 break;
 
             case 'ZipcodeInfo':
                 _t[test]('95060')
-                _t[test]('BOGUS ZIPCODE')
-                _t[test]()
                 break;
 
             default:
