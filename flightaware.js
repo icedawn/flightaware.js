@@ -1,4 +1,4 @@
-var request = require('request');
+const request = require('request-promise-native');
 
 function FlightAware(username,apiKey) {
     this.username = username;
@@ -27,47 +27,28 @@ FlightAware.prototype.setCredentials = function(username, apiKey) {
 };
 
 FlightAware.prototype._request = function(method, data, callback) {
-    request.post({
-        uri : FlightAware.URL + method,
-        form : data,
-        auth : {
-            user : this.username,
-            pass : this.apiKey,
-            sendImmediately : false
+
+    const options = {
+        method: 'POST',
+        uri: FlightAware.URL + method,
+        form: data,
+        auth: {
+            user: this.username,
+            pass: this.apiKey,
+            sendImmediately: false
         },
-        rejectUnauthorized : false,
-    }, function(err, res, body) {
-        if(err) {
-            callback(err, null);
-        }
-        else {
-            var code = res.statusCode;
-            if(code != 200) {
-                switch(code) {
-                    case 401:
-                        callback({ error: "unauthorized", code: code, text: body });
-                        break;
-                    case 410:
-                        callback({ error: "invalid request URI", code: code, text: body });
-                        break;
-                    default:
-                        callback({ error: "bad request", code: code, text: body });
-                        break;
-                }
-            }
-            else {
-                var results = null;
-                err = null;
-                try {
-                    var json = JSON.parse(body);
-                    results = json[method + 'Result'];
-                } catch(e) {
-                    err = { error: e, text: body };
-                }
-                callback(err, results);
-            }
-        }
-    });
+        rejectUnauthorized: false,
+        json: true
+    }
+
+    request(options)
+        .then((json) => { 
+            let key = method + 'Result'
+            callback(null, (key in json) ? json[key] : undefined)
+        })
+        .catch((err) => { 
+            callback(err)
+        })
 };
 
 /*

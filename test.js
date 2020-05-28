@@ -75,10 +75,10 @@ var tests = [
 
 const _t = {
     'AircraftType': (aircraftType) => {
-        it('looks up ' + aircraftType + ' aircraft', (done) => {
+        it(`looks up aircraft ${JSON.stringify(aircraftType)}`, (done) => {
             client.AircraftType(aircraftType, (err, result) => {
                 if(verbose) console.log(`result: ${JSON.stringify(result)}`)
-                expect(err).to.be.null
+                if(err) return done(err)
                 expect(result).to.not.be.null
                 expect(result).to.not.be.undefined
                 expect(result).to.contain.all.keys(['manufacturer', 'type', 'description'])
@@ -534,6 +534,7 @@ for(const test of tests) {
             case 'AircraftType':
                 _t[test]('GALX')
                 _t[test]('BOGUS AIRCRAFT TYPE')
+                _t[test]()
                 break;
 
             case 'AirlineFlightInfo':
