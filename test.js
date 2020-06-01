@@ -70,594 +70,485 @@ var tests = [
     'TailOwner',
     'ZipcodeInfo',
 ]
+
+let defaultResultCheck = (result,keys) => {
+    expect(result).to.not.be.null
+    expect(result).to.not.be.undefined
+    if(keys) {
+        expect(result).to.be.an('object')
+        expect(result).to.contain.all.keys(keys)
+    }
+}
+
+let runTest = (title, api, params, check, noParams=false) => {
+
+    // Run test with callback ...
+    it(title, (done) => {
+        if(noParams) {
+            client[api]((err, result) => {
+                if(err) { done(err) } else { check(result, done) }
+            })
+        }
+        else {
+            client[api](params, (err, result) => {
+                if(err) { done(err) } else { check(result, done) }
+            })
+        }
+    })
+
+    // Run test with promise ...
+    it(`[PROMISE] ${title}`, (done) => {
+        client[api](params)
+            .then((result) => { check(result, done) }).catch((err) => { done(err) })
+    })
+}
+
 const _t = {
-    'AircraftType': (aircraftType) => {
-        it(`looks up aircraft ${JSON.stringify(aircraftType)}`, (done) => {
-            client.AircraftType(aircraftType, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    expect(result).to.not.be.undefined
-                    expect(result).to.contain.all.keys(['manufacturer', 'type', 'description'])
-                    done()
-                }
-            })
-        })
+    'AircraftType': (params) => {
+        let api = 'AircraftType'
+        let title = `looks up aircraft ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['manufacturer', 'type', 'description'])
+            done()
+        }
+        runTest(title, api, params, check)
     },
-    'AirlineFlightInfo': (faFlightID) => {
-        it('looks up flight ID '+ faFlightID, (done) => {
-            client.AirlineFlightInfo(faFlightID, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    expect(result).to.not.be.undefined
-                    expect(result).to.contain.all.keys(['ident'])
-                    done()
-                }
-            })
-        })
+    'AirlineFlightInfo': (params) => {
+        let api = 'AirlineFlightInfo'
+        let title = `looks up flight ID ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['ident'])
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'AirlineFlightSchedules': (params) => {
-        it(`looks up airline flight schedules: ${JSON.stringify(params)}`, (done) => {
-            client.AirlineFlightSchedules(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'AirlineFlightSchedules'
+        let title = `looks up airline flight schedules: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'data'])
+            expect(result.data).to.be.an('array')
+            done()
+        }
+        runTest(title, api, params, check)
     },
-    'AirlineInfo': (airlineCode) => {
-        it(`looks up airline information for ${airlineCode}`, (done) => {
-            client.AirlineInfo(airlineCode, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+    'AirlineInfo': (params) => {
+        let api = 'AirlineInfo'
+        let title = `looks up airline information for ${params}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['name', 'shortname', 'callsign','location','country','url', 'phone'])
+            done()
+        }
+        runTest(title, api, params, check)
     },
-    'AirportInfo': (origin) => {
-        it(`looks up airport information for ${origin}`, (done) => {
-            client.AirportInfo(origin, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+    'AirportInfo': (params) => {
+        let api = 'AirportInfo'
+        let title = `looks up airport information for ${params}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['name', 'location', 'longitude', 'latitude', 'timezone'])
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'AllAirlines': () => {
-        it('looks up all airline information', (done) => {
-            client.AllAirlines((err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'AllAirlines'
+        let title = `looks up all airline information`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['data'])
+            expect(result.data).to.be.an('array')
+            done()
+        }
+        runTest(title, api, undefined, check, noParams=true)
     },
     'AllAirports': () => {
-        it('looks up all airport information', (done) => {
-            client.AllAirports((err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'AllAirports'
+        let title = `looks up all airport information`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['data'])
+            expect(result.data).to.be.an('array')
+            done()
+        }
+        runTest(title, api, undefined, check, noParams=true)
     },
     'Arrived': (params) => {
-        it(`looks up arrival information for ${JSON.stringify(params)}`, (done) => {
-            client.Arrived(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'Arrived'
+        let title = `looks up arrival information for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'arrivals'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.arrivals).to.be.an('array')
+            done()
+        }
+        runTest(title, api, params, check)
     },
-    'BlockIdentCheck': (ident) => {
-        it(`looks up block ident for ${JSON.stringify(ident)}`, (done) => {
-            client.BlockIdentCheck(ident, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+    'BlockIdentCheck': (params) => {
+        let api = 'BlockIdentCheck'
+        let title = `looks up block ident for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            // XXX:  not sure what a blocked response looks like
+            done()
+        }
+        runTest(title, api, params, check)
     },
-    'CountAirportOperations': (origin) => {
-        it(`counts airport operations for ${origin}`, (done) => {
-            client.CountAirportOperations(origin, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+    'CountAirportOperations': (params) => {
+        let api = 'CountAirportOperations'
+        let title = `counts airport operations for ${params}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['enroute', 'departed', 'scheduled_departures', 'scheduled_arrivals'])
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'CountAllEnrouteAirlineOperations': () => {
-        it('counts all enroute airline operations', (done) => {
-            client.CountAllEnrouteAirlineOperations((err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'CountAllEnrouteAirlineOperations'
+        let title = `counts all enroute airline operations`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['data'])
+            expect(result.data).to.be.an('array')
+            done()
+        }
+        runTest(title, api, undefined, check, noParams=true)
     },
-    'DecodeFlightRoute': (faFlightID) => {
-        it(`decodes flight route for ${JSON.stringify(faFlightID)}`, (done) => {
-            client.DecodeFlightRoute(faFlightID, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+    'DecodeFlightRoute': (params) => {
+        let api = 'DecodeFlightRoute'
+        let title = `decodes flight route for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'data'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.data).to.be.an('array')
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'DecodeRoute': (params) => {
-        it(`decodes route between ${JSON.stringify(params)}`, (done) => {
-            client.DecodeRoute(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'DecodeRoute'
+        let title = `decodes route between ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'data'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.data).to.be.an('array')
+            done()
+        }
+        runTest(title, api, params, check)
     },
-    'DeleteAlert': (alertId) => {
-        it(`deletes an alert: ${JSON.stringify(alertId)}`, (done) => {
-            client.DeleteAlert(alertId, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+    'DeleteAlert': (params) => {
+        let api = 'DeleteAlert'
+        let title = `deletes an alert: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            expect(result).to.be.a('number')
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'Departed': (params) => {
-        it(`looks up flights departing from an airport ${JSON.stringify(params)}`, (done) => {
-            client.Departed(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'Departed'
+        let title = `looks up flights departing from an airport ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'departures'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.departures).to.be.an('array')
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'FleetArrived': (params) => {
-        it(`looks up an airline's flights recently arrived ${JSON.stringify(params)}`, (done) => {
-            client.FleetArrived(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'FleetArrived'
+        let title = `looks up an airline's flights recently arrived ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'arrivals'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.arrivals).to.be.an('array')
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'FleetScheduled': (params) => {
-        it(`looks up an airline's flights scheduled to arrive ${JSON.stringify(params)}`, (done) => {
-            client.FleetScheduled(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'FleetScheduled'
+        let title = `looks up an airline's flights scheduled to arrive ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'scheduled'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.scheduled).to.be.an('array')
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'FlightInfo': (params) => {
-        it(`looks up flight information for ${JSON.stringify(params)}`, (done) => {
-            client.FlightInfo(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'FlightInfo'
+        let title = `looks up flight information for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'flights'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.flights).to.be.an('array')
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'FlightInfoEx': (params) => {
-        it(`looks up extended flight information for ${JSON.stringify(params)}`, (done) => {
-            client.FlightInfoEx(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'FlightInfoEx'
+        let title = `looks up extended flight information for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'flights'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.flights).to.be.an('array')
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'GetAlerts': () => {
-        it('get alerts registered to the current user account', (done) => {
-            client.GetAlerts((err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'GetAlerts'
+        let title = `get alerts registered to the current user account`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['num_alerts', 'alerts'])
+            expect(result.num_alerts).to.be.a('number')
+            expect(result.alerts).to.be.an('array')
+            done()
+        }
+        runTest(title, api, undefined, check, noParams=true)
     },
     'GetFlightID': (params) => {
-        it(`looks up a flight for ${JSON.stringify(params)}`, (done) => {
-            client.GetFlightID(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'GetFlightID'
+        let title = `looks up a flight for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            expect(result).to.be.a('string')
+            done()
+        }
+        runTest(title, api, params, check)
     },
-    'GetHistoricalTrack': (faFlightID) => {
-        it(`looks up a historical track for ${JSON.stringify(faFlightID)}`, (done) => {
-            client.GetHistoricalTrack(faFlightID, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+    'GetHistoricalTrack': (params) => {
+        let api = 'GetHistoricalTrack'
+        let title = `looks up a historical track for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['data'])
+            expect(result.data).to.be.an('array')
+            done()
+        }
+        runTest(title, api, params, check)
     },
-    'GetLastTrack': (ident) => {
-        it(`looks up last track for ${JSON.stringify(ident)}`, (done) => {
-            client.GetLastTrack(ident, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+    'GetLastTrack': (params) => {
+        let api = 'GetLastTrack'
+        let title = `looks up last track for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['data'])
+            expect(result.data).to.be.an('array')
+            done()
+        }
+        runTest(title, api, params, check)
     },
-    'InboundFlightInfo': (faFlightID) => {
-        it(`looks up inbound flight info for ${JSON.stringify(faFlightID)}`, (done) => {
-            client.InboundFlightInfo(faFlightID, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+    'InboundFlightInfo': (params) => {
+        let api = 'InboundFlightInfo'
+        let title = `looks up inbound flight info for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            done()
+        }
+        runTest(title, api, params, check)
     },
-    'InFlightInfo': (ident) => {
-        it(`looks up in flight information for ${JSON.stringify(ident)}`, (done) => {
-            client.InFlightInfo(ident, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+    'InFlightInfo': (params) => {
+        let api = 'InFlightInfo'
+        let title = `looks up in flight information for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['faFlightID', 'ident', 'prefix', 'type', 'suffix', 'origin', 'destination', 'timeout', 'timestamp', 'departureTime', 'firstPositionTime', 'arrivalTime', 'longitude', 'latitude', 'lowLongitude', 'lowLatitude', 'highLongitude', 'highLatitude', 'groundspeed', 'altitude', 'heading', 'altitudeStatus', 'updateType', 'altitudeChange', 'waypoints'])
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'LatLongsToDistance': (params) => {
-        it(`computes distance between lat/long points: ${JSON.stringify(params)}`, (done) => {
-            client.LatLongsToDistance(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'LatLongsToDistance'
+        let title = `computes distance between lat/long points: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            expect(result).to.be.a('number')
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'LatLongsToHeading': (params) => {
-        it(`computes heading between lat/long points: ${JSON.stringify(params)}`, (done) => {
-            client.LatLongsToHeading(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'LatLongsToHeading'
+        let title = `computes heading between lat/long points: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            expect(result).to.be.a('number')
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'MapFlight': (params) => {
-        it(`creates flight image for: ${JSON.stringify(params)}`, (done) => {
-            client.MapFlight(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'MapFlight'
+        let title = `creates flight image for: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            expect(result).to.be.a('string')
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'MapFlightEx': (params) => {
-        it(`creates detailed flight image for: ${JSON.stringify(params)}`, (done) => {
-            client.MapFlightEx(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'MapFlightEx'
+        let title = `creates detailed flight image for: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            expect(result).to.be.a('string')
+            done()
+        }
+        runTest(title, api, params, check)
     },
-    'Metar': (airport) => {
-        it(`looks up weather for airport ${JSON.stringify(airport)}`, (done) => {
-            client.Metar(airport, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+    'Metar': (params) => {
+        let api = 'Metar'
+        let title = `looks up weather for airport ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            expect(result).to.be.a('string')
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'MetarEx': (params) => {
-        it(`looks up detailed weather for airport: ${JSON.stringify(params)}`, (done) => {
-            client.MetarEx(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'MetarEx'
+        let title = `looks up detailed weather for airport: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'metar'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.metar).to.be.an('array')
+            done()
+        }
+        runTest(title, api, params, check)
     },
-    'NTaf': (airport) => {
-        it(`looks up in terminal area forecast for airport: ${JSON.stringify(airport)}`, (done) => {
-            client.NTaf(airport, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+    'NTaf': (params) => {
+        let api = 'NTaf'
+        let title = `looks up in terminal area forecast for airport: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['airport', 'timeString', 'forecast'])
+            expect(result.airport).to.be.a('string')
+            expect(result.timeString).to.be.a('string')
+            expect(result.forecast).to.be.an('array')
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'RegisterAlertEndpoint': (params) => {
-        it(`registers alert endpoint for: ${JSON.stringify(params)}`, (done) => {
-            client.RegisterAlertEndpoint(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'RegisterAlertEndpoint'
+        let title = `registers alert endpoint for: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'RoutesBetweenAirports': (params) => {
-        it(`looks up routes between airports: ${JSON.stringify(params)}`, (done) => {
-            client.RoutesBetweenAirports(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'RoutesBetweenAirports'
+        let title = `looks up routes between airports: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['data'])
+            expect(result.data).to.be.an('array')
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'RoutesBetweenAirportsEx': (params) => {
-        it(`looks up detailed routes between airports: ${JSON.stringify(params)}`, (done) => {
-            client.RoutesBetweenAirportsEx(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'RoutesBetweenAirportsEx'
+        let title = `looks up detailed routes between airports: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'data'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.data).to.be.an('array')
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'Scheduled': (params) => {
-        it(`looks up scheduled flights for airport: ${JSON.stringify(params)}`, (done) => {
-            client.Scheduled(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'Scheduled'
+        let title = `looks up scheduled flights for airport: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'scheduled'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.scheduled).to.be.an('array')
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'Search': (params) => {
-        it(`looks up flights by parameters: ${JSON.stringify(params)}`, (done) => {
-            client.Search(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'Search'
+        let title = `looks up flights by parameters: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'aircraft'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.aircraft).to.be.an('array')
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'SearchBirdseyeInFlight': (params) => {
-        it(`looks up in flight information by query: ${JSON.stringify(params)}`, (done) => {
-            client.SearchBirdseyeInFlight(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    done()
-                }
-            })
-        })
+        let api = 'SearchBirdseyeInFlight'
+        let title = `looks up in flight information by query: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'aircraft'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.aircraft).to.be.an('array')
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'SearchBirdseyePositions': (params) => {
-        it(`looks up in flight information by position query: ${JSON.stringify(params)}`, (done) => {
-            client.SearchBirdseyePositions(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    expect(result).to.not.be.undefined
-                    expect(result).to.be.an('object')
-                    done()
-                }
-            })
-        })
+        let api = 'SearchBirdseyePositions'
+        let title = `looks up in flight information by position query: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'data'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.data).to.be.an('array')
+            done()
+        }
+        runTest(title, api, params, check)
     },
     'SearchCount': (params) => {
-        it(`looks up and counts flights by query: ${JSON.stringify(params)}`, (done) => {
-            client.SearchCount(params, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    expect(result).to.not.be.undefined
-                    expect(result).to.be.a('number')
-                    done()
-                }
-            })
-        })
+        let api = 'SearchCount'
+        let title = `looks up and counts flights by query: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            expect(result).to.be.a('number')
+            done()
+        }
+        runTest(title, api, params, check)
     },
-    'SetMaximumResultSize': (maxResultSize) => {
-        it(`sets maximum result size to ${JSON.stringify(maxResultSize)}`, (done) => {
-            client.SetMaximumResultSize(maxResultSize, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    expect(result).to.not.be.undefined
-                    expect(result).to.be.a('number')
-                    done()
-                }
-            })
-        })
+    'SetMaximumResultSize': (params) => {
+        let api = 'SetMaximumResultSize'
+        let title = `sets maximum result size to ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            expect(result).to.be.a('number')
+            done()
+        }
+        runTest(title, api, params, check)
     },
-    'Taf': (airport) => {
-        it(`looks up terminal area forecast for: ${JSON.stringify(airport)}`, (done) => {
-            client.Taf(airport, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    expect(result).to.not.be.undefined
-                    expect(result).to.be.a('string')
-                    done()
-                }
-            })
-        })
+    'Taf': (params) => {
+        let api = 'Taf'
+        let title = `looks up terminal area forecast for: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            done()
+        }
+        runTest(title, api, params, check)
     },
-    'TailOwner': (ident) => {
-        it(`looks up owner by tail number: ${JSON.stringify(ident)}`, (done) => {
-            client.TailOwner(ident, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    expect(result).to.not.be.undefined
-                    expect(result).to.contain.all.keys(['owner', 'location', 'location2', 'website'])
-                    done()
-                }
-            })
-        })
+    'TailOwner': (params) => {
+        let api = 'TailOwner'
+        let title = `looks up owner by tail number: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['owner', 'location', 'location2', 'website'])
+            done()
+        }
+        runTest(title, api, params, check)
     },
-    'ZipcodeInfo': (zipcode) => {
-        it(`looks up zipcode information for: ${JSON.stringify(zipcode)}`, (done) => {
-            client.ZipcodeInfo(zipcode, (err, result) => {
-                if(err) {
-                    done(err)
-                }
-                else {
-                    expect(result).to.not.be.null
-                    expect(result).to.not.be.undefined
-                    expect(result).to.contain.all.keys(['latitude', 'longitude', 'city', 'state', 'county'])
-                    done()
-                }
-            })
-        })
+    'ZipcodeInfo': (params) => {
+        let api = 'ZipcodeInfo'
+        let title = `looks up zipcode information for: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            done()
+        }
+        runTest(title, api, params, check)
     }
 }
 
@@ -678,7 +569,6 @@ for(const test of tests) {
                 _t[test]({ origin: 'KSJC', howMany: 1 })
                 _t[test]({ origin: 'KSJC', startDate: now, EndDate: now + 1*60*60, howMany: 1 })
                 _t[test]({ origin: 'KSJC', startDate: now-1*60*60, EndDate: now, howMany: 1 })
-                _t[test]({ howMany: 1 })
                 break;
 
             case 'AirlineInfo':
@@ -724,7 +614,6 @@ for(const test of tests) {
 
             case 'DeleteAlert':
                 _t[test]('1')
-                _t[test](null)
                 break;
 
             case 'Departed':
@@ -763,11 +652,11 @@ for(const test of tests) {
                 break;
 
             case 'GetLastTrack':
-                _t[test]('N415PW')
+                _t[test]('UAL1497')
                 break;
 
             case 'InboundFlightInfo':
-                _t[test]('N415PW-1457118526-1-0')
+                _t[test]('N415PW-1442008613-adhoc-0')
                 break;
 
             case 'InFlightInfo':
