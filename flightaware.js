@@ -21,31 +21,42 @@ class FlightAware {
      */
     _request(method, params, callback) {
 
-        const options = {
-            method: 'POST',
-            uri: FlightAware.URL + method,
-            form: params,
-            auth: {
-                user: this.username,
-                pass: this.apiKey,
-                sendImmediately: false
-            },
-            rejectUnauthorized: false,
-            json: true
-        }
+        let p = new Promise((resolve, reject) => {
 
-        request(options)
-            .then((json) => { 
-                if(this.debug) console.log(`json: ${JSON.stringify(json)}`)
+            const options = {
+                method: 'POST',
+                uri: FlightAware.URL + method,
+                form: params,
+                auth: {
+                    user: this.username,
+                    pass: this.apiKey,
+                    sendImmediately: false
+                },
+                rejectUnauthorized: false,
+                json: true
+            }
 
-                if('error' in json) throw new Error(json['error'])
+            request(options)
+                .then((json) => { 
+                    if(this.debug) console.log(`json: ${JSON.stringify(json)}`)
 
-                let key = method + 'Result'
-                callback(null, (key in json) ? json[key] : undefined)
-            })
-            .catch((err) => { 
-                callback(err)
-            })
+                    if('error' in json) throw new Error(json['error'])
+
+                    let key = method + 'Result'
+                    resolve((key in json) ? json[key] : undefined)
+                })
+                .catch((err) => { 
+                    reject(err)
+                })
+
+        })
+
+        // If a callback was not provided, simply return the promise ...
+        if(callback === undefined) return(p)
+
+        // Otherwise execute the promise and call the callback provided ...
+        p.then((result) => callback(null, result)).catch((err) => callback(err))
+        return(undefined)
     }
 
     /*
@@ -65,7 +76,7 @@ class FlightAware {
      *  result          object      AircraftTypeStruct
      */
     AircraftType(type, callback) {
-        this._request("AircraftType", { type }, callback)
+        return this._request("AircraftType", { type }, callback)
     }
 
     /*
@@ -88,7 +99,7 @@ class FlightAware {
      *  result          object      AirlineFlightInfoStruct
      */
     AirlineFlightInfo(faFlightID, callback) {
-        this._request("AirlineFlightInfo", { faFlightID }, callback)
+        return this._request("AirlineFlightInfo", { faFlightID }, callback)
     }
 
     /*
@@ -139,7 +150,7 @@ class FlightAware {
     AirlineFlightSchedules(query, callback) {
         if ( !('startDate' in query)) query.startDate = Math.floor(Date.now()/1000)
         if ( !('endDate' in query)) query.endDate = query.startDate + 24*60*60
-        this._request("AirlineFlightSchedules", query, callback)
+        return this._request("AirlineFlightSchedules", query, callback)
     }
 
     /*
@@ -158,7 +169,7 @@ class FlightAware {
      *  result          object      AirlineInfoStruct
      */
     AirlineInfo(airlineCode, callback) {
-        this._request("AirlineInfo", { airlineCode }, callback)
+        return this._request("AirlineInfo", { airlineCode }, callback)
     }
 
     /*
@@ -228,7 +239,7 @@ class FlightAware {
      *  result          object      AirportInfoStruct
      */
     AirportInfo(airportCode, callback) {
-        this._request("AirportInfo", { airportCode }, callback)
+        return this._request("AirportInfo", { airportCode }, callback)
     }
 
     /*
@@ -247,7 +258,7 @@ class FlightAware {
      *  result          object      ArrayOfString
      */
     AllAirlines(callback) {
-        this._request("AllAirlines", {}, callback)
+        return this._request("AllAirlines", {}, callback)
     }
 
     /*
@@ -267,7 +278,7 @@ class FlightAware {
      *  result          object      ArrayOfString
      */
     AllAirports(callback) {
-        this._request("AllAirports", {}, callback)
+        return this._request("AllAirports", {}, callback)
     }
 
     /*
@@ -304,7 +315,7 @@ class FlightAware {
      *  result          object      ArrayOfArrivalStruct
      */
     Arrived(query, callback) {
-        this._request("Arrived", query, callback)
+        return this._request("Arrived", query, callback)
     }
 
     /*
@@ -324,7 +335,7 @@ class FlightAware {
      *  result          int         1=blocked, 0=not blocked
      */
     BlockIdentCheck(ident, callback) {
-        this._request("BlockIdentCheck", { ident }, callback)
+        return this._request("BlockIdentCheck", { ident }, callback)
     }
 
     /*
@@ -344,7 +355,7 @@ class FlightAware {
      *  result          object      CountAirportOperationsStruct
      */
     CountAirportOperations(airport, callback) {
-        this._request("CountAirportOperations", { airport }, callback)
+        return this._request("CountAirportOperations", { airport }, callback)
     }
 
     /*
@@ -362,7 +373,7 @@ class FlightAware {
      *  result          object      ArrayOfCountAirportOperationsStruct
      */
     CountAllEnrouteAirlineOperations(callback) {
-        this._request("CountAllEnrouteAirlineOperations", {}, callback)
+        return this._request("CountAllEnrouteAirlineOperations", {}, callback)
     }
 
     /*
@@ -392,7 +403,7 @@ class FlightAware {
      *  result          object      ArrayOfFlightRouteStruct
      */
     DecodeFlightRoute(faFlightID, callback) {
-        this._request("DecodeFlightRoute", { faFlightID }, callback)
+        return this._request("DecodeFlightRoute", { faFlightID }, callback)
     }
 
     /*
@@ -427,7 +438,7 @@ class FlightAware {
      *  result          object      ArrayOfFlightRouteStruct
      */
     DecodeRoute(query, callback) {
-        this._request("DecodeRoute", query, callback)
+        return this._request("DecodeRoute", query, callback)
     }
 
     /*
@@ -448,7 +459,7 @@ class FlightAware {
      *  result          int         1=success
      */
     DeleteAlert(alert_id, callback) {
-        this._request("DeleteAlert", { alert_id }, callback)
+        return this._request("DeleteAlert", { alert_id }, callback)
     }
 
     /*
@@ -485,7 +496,7 @@ class FlightAware {
      *  result          object      DepartureStruct
      */
     Departed(query, callback) {
-        this._request("Departed", query, callback)
+        return this._request("Departed", query, callback)
     }
 
     /*
@@ -520,7 +531,7 @@ class FlightAware {
      *  result          object      ArrivalStruct
      */
     FleetArrived(query, callback) {
-        this._request("FleetArrived", query, callback)
+        return this._request("FleetArrived", query, callback)
     }
 
     /*
@@ -557,7 +568,7 @@ class FlightAware {
      *  result          object      ScheduledStruct
      */
     FleetScheduled(query, callback) {
-        this._request("FleetScheduled", query, callback)
+        return this._request("FleetScheduled", query, callback)
     }
 
     /*
@@ -597,7 +608,7 @@ class FlightAware {
      *  result          object      FlightInfoStruct
      */
     FlightInfo(query, callback) {
-        this._request("FlightInfo", query, callback)
+        return this._request("FlightInfo", query, callback)
     }
 
     /*
@@ -640,7 +651,7 @@ class FlightAware {
      *  result          object      FlightInfoExStruct
      */
     FlightInfoEx(query, callback) {
-        this._request("FlightInfoEx", query, callback)
+        return this._request("FlightInfoEx", query, callback)
     }
 
     /*
@@ -664,7 +675,7 @@ class FlightAware {
      *  result          object      FlightAlertListing
      */
     GetAlerts(callback) {
-        this._request("GetAlerts", {}, callback)
+        return this._request("GetAlerts", {}, callback)
     }
 
     /*
@@ -695,7 +706,7 @@ class FlightAware {
      *  result          string      returned faFlightID
      */
     GetFlightID(query, callback) {
-        this._request("GetFlightID", query, callback)
+        return this._request("GetFlightID", query, callback)
     }
 
     /*
@@ -732,7 +743,7 @@ class FlightAware {
      *  result          object      ArrayOfTrackStruct
      */
     GetHistoricalTrack(faFlightID, callback) {
-        this._request("GetHistoricalTrack", { faFlightID }, callback)
+        return this._request("GetHistoricalTrack", { faFlightID }, callback)
     }
 
     /*
@@ -768,7 +779,7 @@ class FlightAware {
      *  result          object      ArrayOfTrackStruct
      */
     GetLastTrack(ident, callback) {
-        this._request("GetLastTrack", { ident }, callback)
+        return this._request("GetLastTrack", { ident }, callback)
     }
 
     /*
@@ -795,7 +806,7 @@ class FlightAware {
      *  result          object      FlightExStruct
      */
     InboundFlightInfo(faFlightID, callback) {
-        this._request("InboundFlightInfo", { faFlightID }, callback)
+        return this._request("InboundFlightInfo", { faFlightID }, callback)
     }
 
     /*
@@ -816,7 +827,7 @@ class FlightAware {
      *  result          object      InFlightAircraftStruct
      */
     InFlightInfo(ident, callback) {
-        this._request("InFlightInfo", { ident }, callback)
+        return this._request("InFlightInfo", { ident }, callback)
     }
 
     /*
@@ -842,7 +853,7 @@ class FlightAware {
      *  result          int         returned distance
      */
     LatLongsToDistance(query, callback) {
-        this._request("LatLongsToDistance", query, callback)
+        return this._request("LatLongsToDistance", query, callback)
     }
 
     /*
@@ -870,7 +881,7 @@ class FlightAware {
      *  result          int         returned heading
      */
     LatLongsToHeading(query, callback) {
-        this._request("LatLongsToHeading", query, callback)
+        return this._request("LatLongsToHeading", query, callback)
     }
 
     /*
@@ -898,7 +909,7 @@ class FlightAware {
      *  result          string      returned image data
      */
     MapFlight(query, callback) {
-        this._request("MapFlight", query, callback)
+        return this._request("MapFlight", query, callback)
     }
 
     /*
@@ -962,7 +973,7 @@ class FlightAware {
      *  result          string      returned image data
      */
     MapFlightEx(query, callback) {
-        this._request("MapFlightEx", query, callback)
+        return this._request("MapFlightEx", query, callback)
     }
 
     /*
@@ -986,7 +997,7 @@ class FlightAware {
      *  result          string      metar data
      */
     Metar(airport, callback) {
-        this._request("Metar", { airport }, callback)
+        return this._request("Metar", { airport }, callback)
     }
 
     /*
@@ -1026,7 +1037,7 @@ class FlightAware {
      *  result          object      ArrayOfMetarStruct
      */
     MetarEx(query, callback) {
-        this._request("MetarEx", query, callback)
+        return this._request("MetarEx", query, callback)
     }
 
     /*
@@ -1047,7 +1058,7 @@ class FlightAware {
      *  result          string      NTaf data
      */
     NTaf(airport, callback) {
-        this._request("NTaf", { airport }, callback)
+        return this._request("NTaf", { airport }, callback)
     }
 
     /*
@@ -1081,7 +1092,7 @@ class FlightAware {
      *  result          int         1 on success
      */
     RegisterAlertEndpoint(query, callback) {
-        this._request("RegisterAlertEndpoint", query, callback)
+        return this._request("RegisterAlertEndpoint", query, callback)
     }
 
     /*
@@ -1109,7 +1120,7 @@ class FlightAware {
      *  result          object      ArrayOfRoutesBetweenAirportsStruct
      */
     RoutesBetweenAirports(query, callback) {
-        this._request("RoutesBetweenAirports", query, callback)
+        return this._request("RoutesBetweenAirports", query, callback)
     }
 
     /*
@@ -1151,7 +1162,7 @@ class FlightAware {
      *  result          object      ArrayOfRoutesBetweenAirportsExStruct
      */
     RoutesBetweenAirportsEx(query, callback) {
-        this._request("RoutesBetweenAirportsEx", query, callback)
+        return this._request("RoutesBetweenAirportsEx", query, callback)
     }
 
     /*
@@ -1190,7 +1201,7 @@ class FlightAware {
      *  result          object      ScheduledStruct
      */
     Scheduled(query, callback) {
-        this._request("Scheduled", query, callback)
+        return this._request("Scheduled", query, callback)
     }
 
     /*
@@ -1267,7 +1278,7 @@ class FlightAware {
         }
 
         query.query = queryString
-        this._request("Search", query, callback)
+        return this._request("Search", query, callback)
     }
 
     /*
@@ -1429,7 +1440,7 @@ class FlightAware {
      *  result          object      InFlightStruct
      */
     SearchBirdseyeInFlight(query, callback) {
-        this._request("SearchBirdseyeInFlight", query, callback)
+        return this._request("SearchBirdseyeInFlight", query, callback)
     }
 
     /*
@@ -1522,7 +1533,7 @@ class FlightAware {
      *  result          object      ArrayOfTrackExStruct
      */
     SearchBirdseyePositions(query, callback) {
-        this._request("SearchBirdseyePositions", query, callback)
+        return this._request("SearchBirdseyePositions", query, callback)
     }
 
     /*
@@ -1564,7 +1575,7 @@ class FlightAware {
         }
 
         query.query = queryString
-        this._request("SearchCount", query, callback)
+        return this._request("SearchCount", query, callback)
     }
 
     /*
@@ -1635,7 +1646,7 @@ class FlightAware {
      *  result          int         returns non-zero on success
      */
     SetAlert(query, callback) {
-        this._request("SetAlert", query, callback)
+        return this._request("SetAlert", query, callback)
     }
 
     /*
@@ -1665,7 +1676,7 @@ class FlightAware {
      *  result          int         always returns 0
      */
     SetMaximumResultSize(max_size, callback) {
-        this._request("SetMaximumResultSize", { max_size }, callback)
+        return this._request("SetMaximumResultSize", { max_size }, callback)
     }
 
     /*
@@ -1686,7 +1697,7 @@ class FlightAware {
      *  result          int         always returns 0
      */
     Taf(airport, callback) {
-        this._request("Taf", { airport }, callback)
+        return this._request("Taf", { airport }, callback)
     }
 
     /*
@@ -1707,7 +1718,7 @@ class FlightAware {
      *  result          int         TailOwnerStruct
      */
     TailOwner(ident, callback) {
-        this._request("TailOwner", { ident }, callback)
+        return this._request("TailOwner", { ident }, callback)
     }
 
     /*
@@ -1726,7 +1737,7 @@ class FlightAware {
      *  result          int         ZipcodeInfoStruct
      */
     ZipcodeInfo(zipcode, callback) {
-        this._request("ZipcodeInfo", { zipcode }, callback)
+        return this._request("ZipcodeInfo", { zipcode }, callback)
     }
 
 }
