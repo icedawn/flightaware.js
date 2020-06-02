@@ -93,8 +93,8 @@ let runTest = (title, api, params, check, noParams=false) => {
     })
 
     // Run test with promise ...
-    it(`[PROMISE] ${title}`, (done) => {
-        client[api](params).then((result) => { check(result, done) }).catch((err) => { done(err) })
+    it(`[PROMISE] ${title}`, async () => {
+        check(await client[api](params))
     })
 }
 
@@ -104,7 +104,7 @@ const _t = {
         let title = `looks up aircraft ${JSON.stringify(params)}`
         let check = (result, done) => {
             defaultResultCheck(result, ['manufacturer', 'type', 'description'])
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -113,7 +113,7 @@ const _t = {
         let title = `looks up flight ID ${JSON.stringify(params)}`
         let check = (result, done) => {
             defaultResultCheck(result, ['ident'])
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -123,7 +123,7 @@ const _t = {
         let check = (result, done) => {
             defaultResultCheck(result, ['next_offset', 'data'])
             expect(result.data).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -132,7 +132,7 @@ const _t = {
         let title = `looks up airline information for ${params}`
         let check = (result, done) => {
             defaultResultCheck(result, ['name', 'shortname', 'callsign','location','country','url', 'phone'])
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -141,7 +141,7 @@ const _t = {
         let title = `looks up airport information for ${params}`
         let check = (result, done) => {
             defaultResultCheck(result, ['name', 'location', 'longitude', 'latitude', 'timezone'])
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -151,7 +151,7 @@ const _t = {
         let check = (result, done) => {
             defaultResultCheck(result, ['data'])
             expect(result.data).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, undefined, check, noParams=true)
     },
@@ -161,7 +161,7 @@ const _t = {
         let check = (result, done) => {
             defaultResultCheck(result, ['data'])
             expect(result.data).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, undefined, check, noParams=true)
     },
@@ -172,7 +172,7 @@ const _t = {
             defaultResultCheck(result, ['next_offset', 'arrivals'])
             expect(result.next_offset).to.be.a('number')
             expect(result.arrivals).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -182,7 +182,7 @@ const _t = {
         let check = (result, done) => {
             defaultResultCheck(result)
             // XXX:  not sure what a blocked response looks like
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -191,7 +191,7 @@ const _t = {
         let title = `counts airport operations for ${params}`
         let check = (result, done) => {
             defaultResultCheck(result, ['enroute', 'departed', 'scheduled_departures', 'scheduled_arrivals'])
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -201,7 +201,7 @@ const _t = {
         let check = (result, done) => {
             defaultResultCheck(result, ['data'])
             expect(result.data).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, undefined, check, noParams=true)
     },
@@ -212,7 +212,7 @@ const _t = {
             defaultResultCheck(result, ['next_offset', 'data'])
             expect(result.next_offset).to.be.a('number')
             expect(result.data).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -223,7 +223,7 @@ const _t = {
             defaultResultCheck(result, ['next_offset', 'data'])
             expect(result.next_offset).to.be.a('number')
             expect(result.data).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -233,7 +233,7 @@ const _t = {
         let check = (result, done) => {
             defaultResultCheck(result)
             expect(result).to.be.a('number')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -244,7 +244,7 @@ const _t = {
             defaultResultCheck(result, ['next_offset', 'departures'])
             expect(result.next_offset).to.be.a('number')
             expect(result.departures).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -255,7 +255,7 @@ const _t = {
             defaultResultCheck(result, ['next_offset', 'arrivals'])
             expect(result.next_offset).to.be.a('number')
             expect(result.arrivals).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -266,7 +266,7 @@ const _t = {
             defaultResultCheck(result, ['next_offset', 'scheduled'])
             expect(result.next_offset).to.be.a('number')
             expect(result.scheduled).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -277,7 +277,7 @@ const _t = {
             defaultResultCheck(result, ['next_offset', 'flights'])
             expect(result.next_offset).to.be.a('number')
             expect(result.flights).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -288,7 +288,7 @@ const _t = {
             defaultResultCheck(result, ['next_offset', 'flights'])
             expect(result.next_offset).to.be.a('number')
             expect(result.flights).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -299,7 +299,7 @@ const _t = {
             defaultResultCheck(result, ['num_alerts', 'alerts'])
             expect(result.num_alerts).to.be.a('number')
             expect(result.alerts).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, undefined, check, noParams=true)
     },
@@ -309,7 +309,7 @@ const _t = {
         let check = (result, done) => {
             defaultResultCheck(result)
             expect(result).to.be.a('string')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -319,7 +319,7 @@ const _t = {
         let check = (result, done) => {
             defaultResultCheck(result, ['data'])
             expect(result.data).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -329,7 +329,7 @@ const _t = {
         let check = (result, done) => {
             defaultResultCheck(result, ['data'])
             expect(result.data).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -338,7 +338,7 @@ const _t = {
         let title = `looks up inbound flight info for ${JSON.stringify(params)}`
         let check = (result, done) => {
             defaultResultCheck(result)
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -347,7 +347,7 @@ const _t = {
         let title = `looks up in flight information for ${JSON.stringify(params)}`
         let check = (result, done) => {
             defaultResultCheck(result, ['faFlightID', 'ident', 'prefix', 'type', 'suffix', 'origin', 'destination', 'timeout', 'timestamp', 'departureTime', 'firstPositionTime', 'arrivalTime', 'longitude', 'latitude', 'lowLongitude', 'lowLatitude', 'highLongitude', 'highLatitude', 'groundspeed', 'altitude', 'heading', 'altitudeStatus', 'updateType', 'altitudeChange', 'waypoints'])
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -357,7 +357,7 @@ const _t = {
         let check = (result, done) => {
             defaultResultCheck(result)
             expect(result).to.be.a('number')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -367,7 +367,7 @@ const _t = {
         let check = (result, done) => {
             defaultResultCheck(result)
             expect(result).to.be.a('number')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -377,7 +377,7 @@ const _t = {
         let check = (result, done) => {
             defaultResultCheck(result)
             expect(result).to.be.a('string')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -387,7 +387,7 @@ const _t = {
         let check = (result, done) => {
             defaultResultCheck(result)
             expect(result).to.be.a('string')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -397,7 +397,7 @@ const _t = {
         let check = (result, done) => {
             defaultResultCheck(result)
             expect(result).to.be.a('string')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -408,7 +408,7 @@ const _t = {
             defaultResultCheck(result, ['next_offset', 'metar'])
             expect(result.next_offset).to.be.a('number')
             expect(result.metar).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -420,7 +420,7 @@ const _t = {
             expect(result.airport).to.be.a('string')
             expect(result.timeString).to.be.a('string')
             expect(result.forecast).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -429,7 +429,7 @@ const _t = {
         let title = `registers alert endpoint for: ${JSON.stringify(params)}`
         let check = (result, done) => {
             defaultResultCheck(result)
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -439,7 +439,7 @@ const _t = {
         let check = (result, done) => {
             defaultResultCheck(result, ['data'])
             expect(result.data).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -450,7 +450,7 @@ const _t = {
             defaultResultCheck(result, ['next_offset', 'data'])
             expect(result.next_offset).to.be.a('number')
             expect(result.data).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -461,7 +461,7 @@ const _t = {
             defaultResultCheck(result, ['next_offset', 'scheduled'])
             expect(result.next_offset).to.be.a('number')
             expect(result.scheduled).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -472,7 +472,7 @@ const _t = {
             defaultResultCheck(result, ['next_offset', 'aircraft'])
             expect(result.next_offset).to.be.a('number')
             expect(result.aircraft).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -483,7 +483,7 @@ const _t = {
             defaultResultCheck(result, ['next_offset', 'aircraft'])
             expect(result.next_offset).to.be.a('number')
             expect(result.aircraft).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -494,7 +494,7 @@ const _t = {
             defaultResultCheck(result, ['next_offset', 'data'])
             expect(result.next_offset).to.be.a('number')
             expect(result.data).to.be.an('array')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -504,7 +504,7 @@ const _t = {
         let check = (result, done) => {
             defaultResultCheck(result)
             expect(result).to.be.a('number')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -514,7 +514,7 @@ const _t = {
         let check = (result, done) => {
             defaultResultCheck(result)
             expect(result).to.be.a('number')
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -523,7 +523,7 @@ const _t = {
         let title = `looks up terminal area forecast for: ${JSON.stringify(params)}`
         let check = (result, done) => {
             defaultResultCheck(result)
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -532,7 +532,7 @@ const _t = {
         let title = `looks up owner by tail number: ${JSON.stringify(params)}`
         let check = (result, done) => {
             defaultResultCheck(result, ['owner', 'location', 'location2', 'website'])
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     },
@@ -541,7 +541,7 @@ const _t = {
         let title = `looks up zipcode information for: ${JSON.stringify(params)}`
         let check = (result, done) => {
             defaultResultCheck(result)
-            done()
+            if(done) done()
         }
         runTest(title, api, params, check)
     }
