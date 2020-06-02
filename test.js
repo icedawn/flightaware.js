@@ -85,14 +85,10 @@ let runTest = (title, api, params, check, noParams=false) => {
     // Run test with callback ...
     it(title, (done) => {
         if(noParams) {
-            client[api]((err, result) => {
-                if(err) { done(err) } else { check(result, done) }
-            })
+            client[api]((err, result) => { if(err) { done(err) } else { check(result, done) } })
         }
         else {
-            client[api](params, (err, result) => {
-                if(err) { done(err) } else { check(result, done) }
-            })
+            client[api](params, (err, result) => { if(err) { done(err) } else { check(result, done) } })
         }
     })
 
