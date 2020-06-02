@@ -24,53 +24,6 @@ describe('setCredentials', function() {
     });
 });
 
-var tests = [
-    'AircraftType',
-    'AirlineFlightInfo',
-    'AirlineFlightSchedules',
-    'AirlineInfo',
-    'AirportInfo',
-    'AllAirlines',
-    'AllAirports',
-    'Arrived',
-    'BlockIdentCheck',
-    'CountAirportOperations',
-    'CountAllEnrouteAirlineOperations',
-    'DecodeFlightRoute',
-    'DecodeRoute',
-    'DeleteAlert',
-    'Departed',
-    'FleetArrived',
-    'FleetScheduled',
-    'FlightInfo',
-    'FlightInfoEx',
-    'GetAlerts',
-    'GetFlightID',
-    'GetHistoricalTrack',
-    'GetLastTrack',
-    'InboundFlightInfo',
-    'InFlightInfo',
-    'LatLongsToDistance',
-    'LatLongsToHeading',
-    'MapFlight',
-    'MapFlightEx',
-    'Metar',
-    'MetarEx',
-    'NTaf',
-    'RegisterAlertEndpoint',
-    'RoutesBetweenAirports',
-    'RoutesBetweenAirportsEx',
-    'Scheduled',
-    'Search',
-    'SearchBirdseyeInFlight',
-    'SearchBirdseyePositions',
-    'SearchCount',
-    'SetMaximumResultSize',
-    'Taf',
-    'TailOwner',
-    'ZipcodeInfo',
-]
-
 let defaultResultCheck = (result,keys) => {
     expect(result).to.not.be.null
     expect(result).to.not.be.undefined
@@ -98,7 +51,7 @@ let runTest = (title, api, params, check, noParams=false) => {
     })
 }
 
-const _t = {
+const tests = {
     'AircraftType': (params) => {
         let api = 'AircraftType'
         let title = `looks up aircraft ${JSON.stringify(params)}`
@@ -547,167 +500,170 @@ const _t = {
     }
 }
 
-for(const test of tests) {
+for(const test in tests) {
     
     describe(test, function() {
         switch(test) {
             case 'AircraftType':
-                _t[test]('GALX')
+                tests[test]('GALX')
                 break;
 
             case 'AirlineFlightInfo':
-                _t[test]('N415PW@1442008560')
+                tests[test]('N415PW@1442008560')
                 break;
 
             case 'AirlineFlightSchedules':
                 var now = Math.floor(Date.now()/1000);
-                _t[test]({ origin: 'KSJC', howMany: 1 })
-                _t[test]({ origin: 'KSJC', startDate: now, EndDate: now + 1*60*60, howMany: 1 })
-                _t[test]({ origin: 'KSJC', startDate: now-1*60*60, EndDate: now, howMany: 1 })
+                tests[test]({ origin: 'KSJC', howMany: 1 })
+                tests[test]({ origin: 'KSJC', startDate: now, EndDate: now + 1*60*60, howMany: 1 })
+                tests[test]({ origin: 'KSJC', startDate: now-1*60*60, EndDate: now, howMany: 1 })
                 break;
 
             case 'AirlineInfo':
-                _t[test]('UAL')
+                tests[test]('UAL')
                 break;
 
             case 'AirportInfo':
-                _t[test]('SFO')
+                tests[test]('SFO')
                 break;
 
             case 'AllAirlines':
-                _t[test]()
+                tests[test]()
                 break;
 
             case 'AllAirports':
-                _t[test]()
+                tests[test]()
                 break;
 
             case 'Arrived':
-                _t[test]({ airport: 'KSFO', howMany: 1 })
-                _t[test]({ airport: 'KSFO' })
+                tests[test]({ airport: 'KSFO', howMany: 1 })
+                tests[test]({ airport: 'KSFO' })
                 break;
 
             case 'BlockIdentCheck':
-                _t[test]('N415PW')
+                tests[test]('N415PW')
                 break;
 
             case 'CountAirportOperations':
-                _t[test]('KSFO')
+                tests[test]('KSFO')
                 break;
 
             case 'CountAllEnrouteAirlineOperations':
-                _t[test]()
+                tests[test]()
                 break;
 
             case 'DecodeFlightRoute':
-                _t[test]('N415PW@1442008560')
+                tests[test]('N415PW@1442008560')
                 break;
 
             case 'DecodeRoute':
-                _t[test]({ origin: 'KSQL', route: 'SJC V334 SAC SWR', destination: 'KTRK' })
+                tests[test]({ origin: 'KSQL', route: 'SJC V334 SAC SWR', destination: 'KTRK' })
                 break;
 
             case 'DeleteAlert':
-                _t[test]('1')
+                tests[test]('1')
                 break;
 
             case 'Departed':
-                _t[test]({ airport: 'KSFO' })
-                _t[test]({ airport: 'KSFO', howMany: 1, filter: 'airline', offset: 0 })
-                _t[test]({ airport: 'KSFO', howMany: 1, filter: 'ga' })
-                _t[test]({ airport: 'KSFO', howMany: 1 })
+                tests[test]({ airport: 'KSFO' })
+                tests[test]({ airport: 'KSFO', howMany: 1, filter: 'airline', offset: 0 })
+                tests[test]({ airport: 'KSFO', howMany: 1, filter: 'ga' })
+                tests[test]({ airport: 'KSFO', howMany: 1 })
                 break;
 
             case 'FleetArrived':
-                _t[test]({ fleet: 'UAL', howMany: 1 })
+                tests[test]({ fleet: 'UAL', howMany: 1 })
                 break;
 
             case 'FleetScheduled':
-                _t[test]({ fleet: 'UAL', howMany: 1 })
+                tests[test]({ fleet: 'UAL', howMany: 1 })
                 break;
 
             case 'FlightInfo':
-                _t[test]({ ident: 'N415PW', howMany: 1 })
+                tests[test]({ ident: 'N415PW', howMany: 1 })
                 break;
 
             case 'FlightInfoEx':
-                _t[test]({ ident: 'N415PW', howMany: 1 })
+                tests[test]({ ident: 'N415PW', howMany: 1 })
                 break;
 
             case 'GetAlerts':
-                _t[test]()
+                tests[test]()
                 break;
 
             case 'GetFlightID':
-                _t[test]({ ident: 'N415PW', departureTime: '1442008560' })
+                tests[test]({ ident: 'N415PW', departureTime: '1442008560' })
                 break;
 
             case 'GetHistoricalTrack':
-                _t[test]('N415PW@1442008560')
+                tests[test]('N415PW@1442008560')
                 break;
 
             case 'GetLastTrack':
-                _t[test]('UAL1497')
+                tests[test]('UAL1497')
                 break;
 
             case 'InboundFlightInfo':
-                _t[test]('N415PW-1442008613-adhoc-0')
+                // XXX:  need to set this test up ...
+                /*
+                tests[test]('N415PW-1442008613-adhoc-0')
+                */
                 break;
 
             case 'InFlightInfo':
-                _t[test]('N415PW')
+                tests[test]('N415PW')
                 break;
 
             case 'LatLongsToDistance':
-                _t[test]({ lat1: 37.3626667, lon1: -121.9291111, lat2: 33.9425003, lon2: -118.4080736 })
+                tests[test]({ lat1: 37.3626667, lon1: -121.9291111, lat2: 33.9425003, lon2: -118.4080736 })
                 break;
 
             case 'LatLongsToHeading':
-                _t[test]({ lat1: 37.3626667, lon1: -121.9291111, lat2: 33.9425003, lon2: -118.4080736 })
+                tests[test]({ lat1: 37.3626667, lon1: -121.9291111, lat2: 33.9425003, lon2: -118.4080736 })
                 break;
 
             case 'MapFlight':
-                _t[test]({ ident: 'N415PW', mapHeight: 32, mapWidth: 32 })
+                tests[test]({ ident: 'N415PW', mapHeight: 32, mapWidth: 32 })
                 break;
 
             case 'MapFlightEx':
-                _t[test]({ faFlightID: 'SKW2494@1442040480', mapHeight: 32, mapWidth: 32, show_data_blocks: true, show_airports: true, airports_expand_view: true })
+                tests[test]({ faFlightID: 'SKW2494@1442040480', mapHeight: 32, mapWidth: 32, show_data_blocks: true, show_airports: true, airports_expand_view: true })
                 break;
 
             case 'Metar':
-                _t[test]('KSFO')
+                tests[test]('KSFO')
                 break;
 
             case 'MetarEx':
-                _t[test]({ airport: 'KSFO', howMany: 1 })
+                tests[test]({ airport: 'KSFO', howMany: 1 })
                 break;
 
             case 'NTaf':
-                _t[test]('KSFO')
+                tests[test]('KSFO')
                 break;
 
             case 'RegisterAlertEndpoint':
-                _t[test]({ address: 'http://www.example.com', format_type: 'json/post' })
+                tests[test]({ address: 'http://www.example.com', format_type: 'json/post' })
                 break;
 
             case 'RoutesBetweenAirports':
-                _t[test]({ origin: 'KSFO', destination: 'KLAX' })
+                tests[test]({ origin: 'KSFO', destination: 'KLAX' })
                 break;
 
             case 'RoutesBetweenAirportsEx':
-                _t[test]({ origin: 'KSFO', destination: 'KLAX', howMany: 1 })
+                tests[test]({ origin: 'KSFO', destination: 'KLAX', howMany: 1 })
                 break;
 
             case 'Scheduled':
-                _t[test]({ airport: 'KSFO', howMany: 1 })
+                tests[test]({ airport: 'KSFO', howMany: 1 })
                 break;
 
             case 'Search':
-                _t[test]({ parameters: { type: "B77*" }, howMany: 1 })
-                _t[test]({ parameters: { belowAltitude: 100, "aboveGroundspeed" : 200 }, howMany: 1 })
-                _t[test]({ parameters: { destination: "KLAX", "prefix" : "H" }, howMany: 1 })
-                _t[test]({ parameters: { idents: "UAL*", "type" : "B77*" }, howMany: 1 })
-                _t[test]({ query: '-destination KLAX -prefix H', howMany: 1 })
+                tests[test]({ parameters: { type: "B77*" }, howMany: 1 })
+                tests[test]({ parameters: { belowAltitude: 100, "aboveGroundspeed" : 200 }, howMany: 1 })
+                tests[test]({ parameters: { destination: "KLAX", "prefix" : "H" }, howMany: 1 })
+                tests[test]({ parameters: { idents: "UAL*", "type" : "B77*" }, howMany: 1 })
+                tests[test]({ query: '-destination KLAX -prefix H', howMany: 1 })
                 break;
 
             case 'SearchBirdseyeInFlight':
@@ -719,11 +675,12 @@ for(const test of tests) {
                     [ "{true lifeguard}", "All \"lifeguard\" rescue flights" ],
                     [ "{in orig {KLAX KBUR KSNA KLGB KVNY KSMO KLGB KONT}} {in dest {KJFK KEWR KLGA KTEB KHPN}}", "All flights between Los Angeles area and New York area" ],
                     [ "{range lat 36.897669 40.897669} {range lon -79.03655 -75.03655}", "All flights with a last reported position +/- 2 degrees of the Whitehouse" ],
-                    [ "{> lastPositionTime 1278610758} {true inAir} {!= physClass P} {> circles 3}", "All flights that have a reported position after a specified epoch time, are still in the air, are not piston class, and have made several circular flight patterns (potentially in distress)" ],
+                    // XXX:  need to set this test up ...
+                    // [ "{> lastPositionTime 1278610758} {true inAir} {!= physClass P} {> circles 3}", "All flights that have a reported position after a specified epoch time, are still in the air, are not piston class, and have made several circular flight patterns (potentially in distress)" ],
                 ];
 
                 for(const q of inFlightQueries) {
-                    describe(`SearchBirdseyeInFlight: ${q[1]}`, (query=q[0]) => _t[test]({ query: query, howMany: 1 }))
+                    describe(`SearchBirdseyeInFlight: ${q[1]}`, (query=q[0]) => tests[test]({ query: query, howMany: 1 }))
                 }
                 break;
 
@@ -731,18 +688,20 @@ for(const test of tests) {
                 var positionQueries = [
                     [ "{< alt 100} {> gs 200}", "All flight positions below ten-thousand feet with a groundspeed over 200 kts" ],
                     [ "{match fp ASA*}", "All Alaska Airlines flight positions" ],
-                    [ "{match fp ASA*} {> lat 45}", "All Alaska Airlines flight positions north of the 45th parallel" ],
+                    // XXX:  need to set this test up ...
+                    // [ "{match fp ASA*} {> lat 45}", "All Alaska Airlines flight positions north of the 45th parallel" ],
                     [ "{range lat 36.897669 40.897669} {range lon -79.03655 -75.03655}", "All flight positions +/- 2 degrees of the lat/lon of the Whitehouse" ],
-                    [ "{= fp N415PW-1442008613-adhoc-0}", "All flight positions for a specific flight identifier (faFlightID)" ],
+                    // XXX:  need to set this test up ...
+                    // [ "{= fp N415PW-1442008613-adhoc-0}", "All flight positions for a specific flight identifier (faFlightID)" ],
                 ];
 
                 for(const q of positionQueries) {
-                    describe(`SearchBirdseyePositions: ${q[1]}`, (query=q[0]) => _t[test]({ query: query, uniqueFlights: true, howMany: 1 }))
+                    describe(`SearchBirdseyePositions: ${q[1]}`, (query=q[0]) => tests[test]({ query: query, uniqueFlights: true, howMany: 1 }))
                 }
                 break;
 
             case 'SearchCount':
-                _t[test]({ query: '-destination KLAX -prefix H', howMany: 1 })
+                tests[test]({ query: '-destination KLAX -prefix H', howMany: 1 })
                 break;
 
             case 'SetAlert':
@@ -750,19 +709,19 @@ for(const test of tests) {
                 break;
 
             case 'SetMaximumResultSize':
-                _t[test](100)
+                tests[test](100)
                 break;
 
             case 'Taf':
-                _t[test]('KSFO')
+                tests[test]('KSFO')
                 break;
 
             case 'TailOwner':
-                _t[test]('N415PW')
+                tests[test]('N415PW')
                 break;
 
             case 'ZipcodeInfo':
-                _t[test]('95060')
+                tests[test]('95060')
                 break;
 
             default:
