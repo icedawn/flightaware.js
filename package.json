@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/icedawn/flightaware.js#readme",
   "dependencies": {
-    "request": "^2.69.0",
+    "request": "^2.88.2",
     "request-promise-native": "^1.0.8"
   },
   "devDependencies": {
