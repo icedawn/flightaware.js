@@ -98,8 +98,7 @@ let runTest = (title, api, params, check, noParams=false) => {
 
     // Run test with promise ...
     it(`[PROMISE] ${title}`, (done) => {
-        client[api](params)
-            .then((result) => { check(result, done) }).catch((err) => { done(err) })
+        client[api](params).then((result) => { check(result, done) }).catch((err) => { done(err) })
     })
 }
 
