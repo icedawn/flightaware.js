@@ -1,12 +1,13 @@
-// Local developer configuration ...
-var config = require('./config');
-var expect = require("chai").expect;
-var FlightAware = require('./flightaware');
-var verbose = false;
-var client = new FlightAware();
+/* eslint no-console: ["error", { allow: ["log", "warn", "error"] }] */
+const config = require('./config')
+const expect = require("chai").expect
+const FlightAware = require('./flightaware')
+
+var client = new FlightAware()
+client.debug = true
 
 describe('FlightAware constructor', function() {
-    it('creates a client object', function(done) {
+    it('creates a client object', (done) => {
         expect(client).to.not.be.null;
         expect(client.username).to.be.undefined;
         expect(client.apiKey).to.be.undefined;
@@ -15,7 +16,7 @@ describe('FlightAware constructor', function() {
 });
 
 describe('setCredentials', function() {
-    it('sets the FlightAware username and api key', function(done) {
+    it('sets the FlightAware username and api key', (done) => {
         client.setCredentials(config.username, config.apiKey);
         expect(client.username).to.equal(config.username);
         expect(client.apiKey).to.equal(config.apiKey);
@@ -23,654 +24,646 @@ describe('setCredentials', function() {
     });
 });
 
-var tests = [
-    'AircraftType',
-    'AirlineFlightInfo',
-    'AirlineFlightSchedules',
-    'AirlineInfo',
-    'AirlineInsight',
-    'AirportInfo',
-    'AllAirlines',
-    'AllAirports',
-    'Arrived',
-    'BlockIdentCheck',
-    'CountAirportOperations',
-    'CountAllEnrouteAirlineOperations',
-    'DecodeFlightRoute',
-    'DecodeRoute',
-    'DeleteAlert',
-    'Departed',
-    'FleetArrived',
-    'FleetScheduled',
-    'FlightInfo',
-    'FlightInfoEx',
-    'GetAlerts',
-    'GetFlightID',
-    'GetHistoricalTrack',
-    'GetLastTrack',
-    'InboundFlightInfo',
-    'InFlightInfo',
-    'LatLongsToDistance',
-    'LatLongsToHeading',
-    'MapFlight',
-    'MapFlightEx',
-    'Metar',
-    'MetarEx',
-    'NTaf',
-    'RegisterAlertEndpoint',
-    'RoutesBetweenAirports',
-    'RoutesBetweenAirportsEx',
-    'Scheduled',
-    'Search',
-    'SearchBirdseyeInFlight',
-    'SearchBirdseyePositions',
-    'SearchCount',
-    'SetMaximumResultSize',
-    'Taf',
-    'TailOwner',
-    'ZipcodeInfo',
-];
+let defaultResultCheck = (result,keys) => {
+    expect(result).to.not.be.null
+    expect(result).to.not.be.undefined
+    if(keys) {
+        expect(result).to.be.an('object')
+        expect(result).to.contain.all.keys(keys)
+    }
+}
 
-for(var i in tests) {
+let runTest = (title, api, params, check, noParams=false) => {
+
+    // Run test with callback ...
+    it(title, (done) => {
+        if(noParams) {
+            client[api]((err, result) => { if(err) { done(err) } else { check(result, done) } })
+        }
+        else {
+            client[api](params, (err, result) => { if(err) { done(err) } else { check(result, done) } })
+        }
+    })
+
+    // Run test with promise ...
+    it(`[PROMISE] ${title}`, async () => {
+        check(await client[api](params))
+    })
+}
+
+const tests = {
+    'AircraftType': (params) => {
+        let api = 'AircraftType'
+        let title = `looks up aircraft ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['manufacturer', 'type', 'description'])
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'AirlineFlightInfo': (params) => {
+        let api = 'AirlineFlightInfo'
+        let title = `looks up flight ID ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['ident'])
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'AirlineFlightSchedules': (params) => {
+        let api = 'AirlineFlightSchedules'
+        let title = `looks up airline flight schedules: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'data'])
+            expect(result.data).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'AirlineInfo': (params) => {
+        let api = 'AirlineInfo'
+        let title = `looks up airline information for ${params}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['name', 'shortname', 'callsign','location','country','url', 'phone'])
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'AirportInfo': (params) => {
+        let api = 'AirportInfo'
+        let title = `looks up airport information for ${params}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['name', 'location', 'longitude', 'latitude', 'timezone'])
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'AllAirlines': () => {
+        let api = 'AllAirlines'
+        let title = `looks up all airline information`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['data'])
+            expect(result.data).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, undefined, check, noParams=true)
+    },
+    'AllAirports': () => {
+        let api = 'AllAirports'
+        let title = `looks up all airport information`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['data'])
+            expect(result.data).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, undefined, check, noParams=true)
+    },
+    'Arrived': (params) => {
+        let api = 'Arrived'
+        let title = `looks up arrival information for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'arrivals'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.arrivals).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'BlockIdentCheck': (params) => {
+        let api = 'BlockIdentCheck'
+        let title = `looks up block ident for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            // XXX:  not sure what a blocked response looks like
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'CountAirportOperations': (params) => {
+        let api = 'CountAirportOperations'
+        let title = `counts airport operations for ${params}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['enroute', 'departed', 'scheduled_departures', 'scheduled_arrivals'])
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'CountAllEnrouteAirlineOperations': () => {
+        let api = 'CountAllEnrouteAirlineOperations'
+        let title = `counts all enroute airline operations`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['data'])
+            expect(result.data).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, undefined, check, noParams=true)
+    },
+    'DecodeFlightRoute': (params) => {
+        let api = 'DecodeFlightRoute'
+        let title = `decodes flight route for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'data'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.data).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'DecodeRoute': (params) => {
+        let api = 'DecodeRoute'
+        let title = `decodes route between ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'data'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.data).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'DeleteAlert': (params) => {
+        let api = 'DeleteAlert'
+        let title = `deletes an alert: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            expect(result).to.be.a('number')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'Departed': (params) => {
+        let api = 'Departed'
+        let title = `looks up flights departing from an airport ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'departures'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.departures).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'FleetArrived': (params) => {
+        let api = 'FleetArrived'
+        let title = `looks up an airline's flights recently arrived ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'arrivals'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.arrivals).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'FleetScheduled': (params) => {
+        let api = 'FleetScheduled'
+        let title = `looks up an airline's flights scheduled to arrive ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'scheduled'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.scheduled).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'FlightInfo': (params) => {
+        let api = 'FlightInfo'
+        let title = `looks up flight information for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'flights'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.flights).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'FlightInfoEx': (params) => {
+        let api = 'FlightInfoEx'
+        let title = `looks up extended flight information for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'flights'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.flights).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'GetAlerts': () => {
+        let api = 'GetAlerts'
+        let title = `get alerts registered to the current user account`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['num_alerts', 'alerts'])
+            expect(result.num_alerts).to.be.a('number')
+            expect(result.alerts).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, undefined, check, noParams=true)
+    },
+    'GetFlightID': (params) => {
+        let api = 'GetFlightID'
+        let title = `looks up a flight for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            expect(result).to.be.a('string')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'GetHistoricalTrack': (params) => {
+        let api = 'GetHistoricalTrack'
+        let title = `looks up a historical track for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['data'])
+            expect(result.data).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'GetLastTrack': (params) => {
+        let api = 'GetLastTrack'
+        let title = `looks up last track for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['data'])
+            expect(result.data).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'InboundFlightInfo': (params) => {
+        let api = 'InboundFlightInfo'
+        let title = `looks up inbound flight info for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'InFlightInfo': (params) => {
+        let api = 'InFlightInfo'
+        let title = `looks up in flight information for ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['faFlightID', 'ident', 'prefix', 'type', 'suffix', 'origin', 'destination', 'timeout', 'timestamp', 'departureTime', 'firstPositionTime', 'arrivalTime', 'longitude', 'latitude', 'lowLongitude', 'lowLatitude', 'highLongitude', 'highLatitude', 'groundspeed', 'altitude', 'heading', 'altitudeStatus', 'updateType', 'altitudeChange', 'waypoints'])
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'LatLongsToDistance': (params) => {
+        let api = 'LatLongsToDistance'
+        let title = `computes distance between lat/long points: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            expect(result).to.be.a('number')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'LatLongsToHeading': (params) => {
+        let api = 'LatLongsToHeading'
+        let title = `computes heading between lat/long points: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            expect(result).to.be.a('number')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'MapFlight': (params) => {
+        let api = 'MapFlight'
+        let title = `creates flight image for: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            expect(result).to.be.a('string')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'MapFlightEx': (params) => {
+        let api = 'MapFlightEx'
+        let title = `creates detailed flight image for: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            expect(result).to.be.a('string')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'Metar': (params) => {
+        let api = 'Metar'
+        let title = `looks up weather for airport ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            expect(result).to.be.a('string')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'MetarEx': (params) => {
+        let api = 'MetarEx'
+        let title = `looks up detailed weather for airport: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'metar'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.metar).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'NTaf': (params) => {
+        let api = 'NTaf'
+        let title = `looks up in terminal area forecast for airport: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['airport', 'timeString', 'forecast'])
+            expect(result.airport).to.be.a('string')
+            expect(result.timeString).to.be.a('string')
+            expect(result.forecast).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'RegisterAlertEndpoint': (params) => {
+        let api = 'RegisterAlertEndpoint'
+        let title = `registers alert endpoint for: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'RoutesBetweenAirports': (params) => {
+        let api = 'RoutesBetweenAirports'
+        let title = `looks up routes between airports: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['data'])
+            expect(result.data).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'RoutesBetweenAirportsEx': (params) => {
+        let api = 'RoutesBetweenAirportsEx'
+        let title = `looks up detailed routes between airports: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'data'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.data).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'Scheduled': (params) => {
+        let api = 'Scheduled'
+        let title = `looks up scheduled flights for airport: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'scheduled'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.scheduled).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'Search': (params) => {
+        let api = 'Search'
+        let title = `looks up flights by parameters: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'aircraft'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.aircraft).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'SearchBirdseyeInFlight': (params) => {
+        let api = 'SearchBirdseyeInFlight'
+        let title = `looks up in flight information by query: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'aircraft'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.aircraft).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'SearchBirdseyePositions': (params) => {
+        let api = 'SearchBirdseyePositions'
+        let title = `looks up in flight information by position query: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['next_offset', 'data'])
+            expect(result.next_offset).to.be.a('number')
+            expect(result.data).to.be.an('array')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'SearchCount': (params) => {
+        let api = 'SearchCount'
+        let title = `looks up and counts flights by query: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            expect(result).to.be.a('number')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'SetMaximumResultSize': (params) => {
+        let api = 'SetMaximumResultSize'
+        let title = `sets maximum result size to ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            expect(result).to.be.a('number')
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'Taf': (params) => {
+        let api = 'Taf'
+        let title = `looks up terminal area forecast for: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'TailOwner': (params) => {
+        let api = 'TailOwner'
+        let title = `looks up owner by tail number: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result, ['owner', 'location', 'location2', 'website'])
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    },
+    'ZipcodeInfo': (params) => {
+        let api = 'ZipcodeInfo'
+        let title = `looks up zipcode information for: ${JSON.stringify(params)}`
+        let check = (result, done) => {
+            defaultResultCheck(result)
+            if(done) done()
+        }
+        runTest(title, api, params, check)
+    }
+}
+
+for(const test in tests) {
     
-    var test = tests[i];
-
     describe(test, function() {
         switch(test) {
             case 'AircraftType':
-                it('looks up GALX aircraft', function(done) {
-                    client.AircraftType('GALX', function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        expect(result).to.contain.all.keys(['manufacturer', 'type', 'description']);
-                        done();
-                    });
-                });
+                tests[test]('GALX')
                 break;
 
             case 'AirlineFlightInfo':
-                var faFlightID = 'N415PW@1442008560';
-                it('looks up flight ID '+ faFlightID, function(done) {
-                    client.AirlineFlightInfo('N415PW@1442008560', function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        expect(result).to.contain.all.keys(['ident']);
-                        expect(result.ident).to.equal('N415PW');
-                        done();
-                    });
-                });
+                tests[test]('N415PW@1442008560')
                 break;
 
             case 'AirlineFlightSchedules':
-                it('looks up airline flight schedules from KSJC for the next 24 hours', function(done) {
-                    client.AirlineFlightSchedules({
-                        origin: 'KSJC',
-                        howMany: 1
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        if(result && result.data) {
-                            var schedules = result.data;
-                            for(var i in schedules) {
-                                if(verbose) console.log('schedule = ', schedules[i]);
-                            }
-                        }
-                        done();
-                    });
-                });
-
                 var now = Math.floor(Date.now()/1000);
-
-                it('looks up airline flight schedules from KSJC for the next hour', function(done) {
-                    client.AirlineFlightSchedules({
-                        origin: 'KSJC',
-                        startDate: now,
-                        endDate: now + 1*60*60,
-                        howMany: 1
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        if(result && result.data) {
-                            var schedules = result.data;
-                            for(var i in schedules) {
-                                if(verbose) console.log('schedule = ', schedules[i]);
-                            }
-                        }
-                        done();
-                    });
-                });
-
-                it('looks up airline flight schedules from KSJC for the past hour', function(done) {
-                    client.AirlineFlightSchedules({
-                        origin: 'KSJC',
-                        startDate: now - 1*60*60,
-                        endDate: now,
-                        howMany: 1
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        if(result && result.data) {
-                            var schedules = result.data;
-                            for(var i in schedules) {
-                                if(verbose) console.log('schedule = ', schedules[i]);
-                            }
-                        }
-                        done();
-                    });
-                });
+                tests[test]({ origin: 'KSJC', howMany: 1 })
+                tests[test]({ origin: 'KSJC', startDate: now, EndDate: now + 1*60*60, howMany: 1 })
+                tests[test]({ origin: 'KSJC', startDate: now-1*60*60, EndDate: now, howMany: 1 })
                 break;
 
             case 'AirlineInfo':
-                it('looks up airline information', function(done) {
-                    client.AirlineInfo('UAL', function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
-                break;
-
-            case 'AirlineInsight':
-                var origin = 'SJC';
-                var destination = 'LAX';
-                it('looks up airline information for route ' + origin + ' to ' + destination + ' (default report)', function(done) {
-                    client.AirlineInsight({ 
-                        origin: origin,
-                        destination: destination,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        if(verbose) console.log('err, result = ', err, result);
-                        if(result && result.data) {
-                            var insights = result.data;
-                            for(var i in insights) {
-                                if(verbose) console.log('insight = ', insights[i]);
-                            }
-                        }
-                        done();
-                    });
-                });
-                it('looks up airline information for route ' + origin + ' to ' + destination + ' (alternate route popularity)', function(done) {
-                    client.AirlineInsight({ 
-                        origin: origin,
-                        destination: destination,
-                        reportType: 1,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        if(verbose) console.log('err, result = ', err, result);
-                        if(result && result.data) {
-                            var insights = result.data;
-                            for(var i in insights) {
-                                if(verbose) console.log('insight = ', insights[i]);
-                            }
-                        }
-                        done();
-                    });
-                });
+                tests[test]('UAL')
                 break;
 
             case 'AirportInfo':
-                var origin = 'SFO';
-                it('looks up airport information for ' + origin, function(done) {
-                    client.AirportInfo(origin, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]('SFO')
                 break;
 
             case 'AllAirlines':
-                it('looks up all airline information', function(done) {
-                    client.AllAirlines(function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]()
                 break;
 
             case 'AllAirports':
-                it('looks up airline information', function(done) {
-                    client.AllAirports(function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]()
                 break;
 
             case 'Arrived':
-                var origin = 'KSFO';
-                it('looks up arrival information for ' + origin, function(done) {
-                    client.Arrived({ airport: origin, howMany: 1 }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]({ airport: 'KSFO', howMany: 1 })
+                tests[test]({ airport: 'KSFO' })
                 break;
 
             case 'BlockIdentCheck':
-                var ident = 'N415PW';
-                it('looks up block ident for ' + ident, function(done) {
-                    client.BlockIdentCheck(ident, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]('N415PW')
                 break;
 
             case 'CountAirportOperations':
-                var origin = 'KSFO';
-                it('counts airport operations for ' + origin, function(done) {
-                    client.CountAirportOperations(origin, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]('KSFO')
                 break;
 
             case 'CountAllEnrouteAirlineOperations':
-                it('counts all enroute airline operations', function(done) {
-                    client.CountAllEnrouteAirlineOperations(function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]()
                 break;
 
             case 'DecodeFlightRoute':
-                var faFlightID = 'N415PW@1442008560';
-                it('decodes flight route for ' + faFlightID, function(done) {
-                    client.DecodeFlightRoute(faFlightID, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]('N415PW@1442008560')
                 break;
 
             case 'DecodeRoute':
-                var origin = 'KSQL';
-                var route = 'SJC V334 SAC SWR';
-                var destination = 'KTRK';
-                it('decodes route between ' + origin + ' and ' + destination, function(done) {
-                    client.DecodeRoute({ 
-                        origin: origin, 
-                        route: route, 
-                        destination: destination
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]({ origin: 'KSQL', route: 'SJC V334 SAC SWR', destination: 'KTRK' })
                 break;
 
             case 'DeleteAlert':
-                it('deletes an alert', function(done) {
-                    client.DeleteAlert('1', function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
-                it('deletes an alert using a null ID', function(done) {
-                    client.DeleteAlert(null, function(err, result) {
-                        expect(err).to.be.not.null;
-                        expect(result).to.be.null;
-                        done();
-                    });
-                });
+                tests[test]('1')
                 break;
 
             case 'Departed':
-                var origin = 'KSFO';
-                it('looks up airline information', function(done) {
-                    client.Departed({ 
-                        airport: origin,
-                        howMany: 1
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]({ airport: 'KSFO' })
+                tests[test]({ airport: 'KSFO', howMany: 1, filter: 'airline', offset: 0 })
+                tests[test]({ airport: 'KSFO', howMany: 1, filter: 'ga' })
+                tests[test]({ airport: 'KSFO', howMany: 1 })
                 break;
 
             case 'FleetArrived':
-                it('looks up airline information', function(done) {
-                    client.FleetArrived({ 
-                        fleet: "URF", 
-                        howMany: 1 
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]({ fleet: 'UAL', howMany: 1 })
                 break;
 
             case 'FleetScheduled':
-                var fleet = 'URF';
-                it('looks up airline information', function(done) {
-                    client.FleetScheduled({ 
-                        fleet: fleet, 
-                        howMany: 1 
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]({ fleet: 'UAL', howMany: 1 })
                 break;
 
             case 'FlightInfo':
-                var ident = 'N415PW';
-                it('looks up flight information for ' + ident, function(done) {
-                    client.FlightInfo({ 
-                        ident: ident,
-                        howMany: 1
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]({ ident: 'N415PW', howMany: 1 })
                 break;
 
             case 'FlightInfoEx':
-                var ident = 'N415PW';
-                it('looks up flight information for ' + ident, function(done) {
-                    client.FlightInfoEx({ 
-                        ident: ident, 
-                        howMany: 1
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]({ ident: 'N415PW', howMany: 1 })
                 break;
 
             case 'GetAlerts':
-                it('setup offline alerts', function(done) {
-                    client.GetAlerts(function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]()
                 break;
 
             case 'GetFlightID':
-                var ident = 'N415PW';
-                var departure = '1442008560' ;
-                it('looks up a flight for ' + ident, function(done) {
-                    client.GetFlightID({ 
-                        ident: 'N415PW', 
-                        departureTime: '1442008560' 
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]({ ident: 'N415PW', departureTime: '1442008560' })
                 break;
 
             case 'GetHistoricalTrack':
-                var faFlightID = 'N415PW@1442008560' ;
-                it('looks up a historical track for ' + faFlightID, function(done) {
-                    client.GetHistoricalTrack(faFlightID, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]('N415PW@1442008560')
                 break;
 
             case 'GetLastTrack':
-                var ident = 'N415PW';
-                it('looks up last track for ' + ident, function(done) {
-                    client.GetLastTrack(ident, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]('UAL1497')
                 break;
 
             case 'InboundFlightInfo':
-                var faFlightID = 'N415PW-1457118526-1-0';
-                it('looks up inbound flight info for ' + faFlightID, function(done) {
-                    client.InboundFlightInfo(faFlightID, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                // XXX:  need to set this test up ...
+                /*
+                tests[test]('N415PW-1442008613-adhoc-0')
+                */
                 break;
 
             case 'InFlightInfo':
-                var ident = 'N415PW';
-                it('looks up in flight information for ' + ident, function(done) {
-                    client.InFlightInfo(ident, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]('N415PW')
                 break;
 
             case 'LatLongsToDistance':
-                var lat1 = 37.3626667;
-                var lon1 = -121.9291111;
-                var lat2 = 33.9425003;
-                var lon2 = -118.4080736;
-                it('computes distance between lat/long points', function(done) {
-                    client.LatLongsToDistance({ 
-                        lat1: lat1,
-                        lon1: lon1,
-                        lat2: lat2,
-                        lon2: lon2,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]({ lat1: 37.3626667, lon1: -121.9291111, lat2: 33.9425003, lon2: -118.4080736 })
                 break;
 
             case 'LatLongsToHeading':
-                var lat1 = 37.3626667;
-                var lon1 = -121.9291111;
-                var lat2 = 33.9425003;
-                var lon2 = -118.4080736;
-                it('computes heading between lat/long points', function(done) {
-                    client.LatLongsToHeading({ 
-                        lat1: lat1,
-                        lon1: lon1,
-                        lat2: lat2,
-                        lon2: lon2,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]({ lat1: 37.3626667, lon1: -121.9291111, lat2: 33.9425003, lon2: -118.4080736 })
                 break;
 
             case 'MapFlight':
-                var ident = 'N415PW';
-                var mapHeight = 32;
-                var mapWidth = 32;
-                it('creates flight image for ' + ident, function(done) {
-                    client.MapFlight({
-                        ident: ident,
-                        mapHeight: mapHeight,
-                        mapWidth: mapWidth,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]({ ident: 'N415PW', mapHeight: 32, mapWidth: 32 })
                 break;
 
             case 'MapFlightEx':
-                var faFlightID = 'SKW2494@1442040480';
-                var mapHeight = 32;
-                var mapWidth = 32;
-                it('creates detailed flight image for ' + faFlightID, function(done) {
-                    client.MapFlightEx({
-                        faFlightID: faFlightID,
-                        mapHeight: mapHeight,
-                        mapWidth: mapWidth,
-                        show_data_blocks: true,
-                        show_airports: true,
-                        airports_expand_view: true,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]({ faFlightID: 'SKW2494@1442040480', mapHeight: 32, mapWidth: 32, show_data_blocks: true, show_airports: true, airports_expand_view: true })
                 break;
 
             case 'Metar':
-                var airport = 'KSFO';
-                it('looks up weather for airport ' + airport, function(done) {
-                    client.Metar(airport, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]('KSFO')
                 break;
 
             case 'MetarEx':
-                var airport = 'KSFO';
-                it('looks up detailed weather for airport ' + airport, function(done) {
-                    client.MetarEx({
-                        airport: airport, 
-                        howMany: 1,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]({ airport: 'KSFO', howMany: 1 })
                 break;
 
             case 'NTaf':
-                var airport = 'KSFO';
-                it('looks up in terminal area forecast for ' + airport, function(done) {
-                    client.NTaf(airport, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]('KSFO')
                 break;
 
             case 'RegisterAlertEndpoint':
-                var address = 'http://www.example.com';
-                it('registers alert endpoint for ' + address, function(done) {
-                    client.RegisterAlertEndpoint({
-                        address: address, 
-                        format_type: 'json/post',
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]({ address: 'http://www.example.com', format_type: 'json/post' })
                 break;
 
             case 'RoutesBetweenAirports':
-                var origin = 'KSFO';
-                var destination = 'KLAX';
-                it('looks up routes between airports ' + origin + ' and ' + destination, function(done) {
-                    client.RoutesBetweenAirports({
-                        origin: origin, 
-                        destination: destination,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]({ origin: 'KSFO', destination: 'KLAX' })
                 break;
 
             case 'RoutesBetweenAirportsEx':
-                var origin = 'KSFO';
-                var destination = 'KLAX';
-                it('looks up detailed routes between airports ' + origin + ' and ' + destination, function(done) {
-                    client.RoutesBetweenAirportsEx({
-                        origin: origin, 
-                        destination: destination,
-                        howMany: 1,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]({ origin: 'KSFO', destination: 'KLAX', howMany: 1 })
                 break;
 
             case 'Scheduled':
-                var airport = 'KSFO';
-                it('looks up scheduled flights for ' + airport, function(done) {
-                    client.Scheduled({
-                        airport: airport, 
-                        howMany: 1,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]({ airport: 'KSFO', howMany: 1 })
                 break;
 
             case 'Search':
-                var searchParameters = [
-                    { "type" : "B77*" },
-                    { "belowAltitude" : 100, "aboveGroundspeed" : 200 },
-                    { "destination" : "KLAX", "prefix" : "H" },
-                    { "idents" : "UAL*", "type" : "B73*" },
-                ];
-
-                for(var i in searchParameters) {
-                    var parameters = searchParameters[i];
-
-                    it('looks up flights by parameters ' + JSON.stringify(parameters), function(done) {
-                        client.Search({
-                            parameters: parameters,
-                            howMany: 1,
-                        }, function(err, result) {
-                            expect(err).to.be.null;
-                            expect(result).to.not.be.null;
-                        done();
-                        });
-                    });
-                }
-
-                var query = '-destination KLAX -prefix H';
-                it('looks up flights by query ' + query, function(done) {
-                    client.Search({
-                        query: '-destination KLAX -prefix H',
-                        howMany: 1,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]({ parameters: { type: "B77*" }, howMany: 1 })
+                tests[test]({ parameters: { belowAltitude: 100, "aboveGroundspeed" : 200 }, howMany: 1 })
+                tests[test]({ parameters: { destination: "KLAX", "prefix" : "H" }, howMany: 1 })
+                tests[test]({ parameters: { idents: "UAL*", "type" : "B77*" }, howMany: 1 })
+                tests[test]({ query: '-destination KLAX -prefix H', howMany: 1 })
                 break;
 
             case 'SearchBirdseyeInFlight':
@@ -682,21 +675,12 @@ for(var i in tests) {
                     [ "{true lifeguard}", "All \"lifeguard\" rescue flights" ],
                     [ "{in orig {KLAX KBUR KSNA KLGB KVNY KSMO KLGB KONT}} {in dest {KJFK KEWR KLGA KTEB KHPN}}", "All flights between Los Angeles area and New York area" ],
                     [ "{range lat 36.897669 40.897669} {range lon -79.03655 -75.03655}", "All flights with a last reported position +/- 2 degrees of the Whitehouse" ],
-                    [ "{> lastPositionTime 1278610758} {true inAir} {!= physClass P} {> circles 3}", "All flights that have a reported position after a specified epoch time, are still in the air, are not piston class, and have made several circular flight patterns (potentially in distress)" ],
+                    // XXX:  need to set this test up ...
+                    // [ "{> lastPositionTime 1278610758} {true inAir} {!= physClass P} {> circles 3}", "All flights that have a reported position after a specified epoch time, are still in the air, are not piston class, and have made several circular flight patterns (potentially in distress)" ],
                 ];
 
-                for(var i in inFlightQueries) {
-                    var query = inFlightQueries[i][0];
-                    it('looks up in flight information by query ' + query, function(done) {
-                        client.SearchBirdseyeInFlight({
-                            query: query,
-                            howMany: 1,
-                        }, function(err, result) {
-                            expect(err).to.be.null;
-                            expect(result).to.not.be.null;
-                            done();
-                        });
-                    });
+                for(const q of inFlightQueries) {
+                    describe(`SearchBirdseyeInFlight: ${q[1]}`, (query=q[0]) => tests[test]({ query: query, howMany: 1 }))
                 }
                 break;
 
@@ -704,39 +688,20 @@ for(var i in tests) {
                 var positionQueries = [
                     [ "{< alt 100} {> gs 200}", "All flight positions below ten-thousand feet with a groundspeed over 200 kts" ],
                     [ "{match fp ASA*}", "All Alaska Airlines flight positions" ],
-                    [ "{match fp ASA*} {> lat 45}", "All Alaska Airlines flight positions north of the 45th parallel" ],
+                    // XXX:  need to set this test up ...
+                    // [ "{match fp ASA*} {> lat 45}", "All Alaska Airlines flight positions north of the 45th parallel" ],
                     [ "{range lat 36.897669 40.897669} {range lon -79.03655 -75.03655}", "All flight positions +/- 2 degrees of the lat/lon of the Whitehouse" ],
-                    [ "{= fp N415PW-1442008613-adhoc-0}", "All flight positions for a specific flight identifier (faFlightID)" ],
+                    // XXX:  need to set this test up ...
+                    // [ "{= fp N415PW-1442008613-adhoc-0}", "All flight positions for a specific flight identifier (faFlightID)" ],
                 ];
 
-                for(var i in positionQueries) {
-                    var query = positionQueries[i][0];
-                    it('looks up in flight information by position query ' + query, function(done) {
-                        client.SearchBirdseyePositions({
-                            query: query,
-                            uniqueFlights: true,
-                            howMany: 1,
-                        }, function(err, result) {
-                            expect(err).to.be.null;
-                            expect(result).to.not.be.null;
-                            done();
-                        });
-                    });
+                for(const q of positionQueries) {
+                    describe(`SearchBirdseyePositions: ${q[1]}`, (query=q[0]) => tests[test]({ query: query, uniqueFlights: true, howMany: 1 }))
                 }
                 break;
 
             case 'SearchCount':
-                var query = '-destination KLAX -prefix H';
-                it('looks up and counts flights by query ' + query, function(done) {
-                    client.SearchCount({
-                        query: query,
-                        howMany: 1,
-                    }, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]({ query: '-destination KLAX -prefix H', howMany: 1 })
                 break;
 
             case 'SetAlert':
@@ -744,51 +709,23 @@ for(var i in tests) {
                 break;
 
             case 'SetMaximumResultSize':
-                var maxResultSize = 100;
-                it('sets maximum result size to ' + maxResultSize, function(done) {
-                    client.SetMaximumResultSize(maxResultSize, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test](100)
                 break;
 
             case 'Taf':
-                var airport = 'KSFO';
-                it('looks up terminal area forecast for ' + airport, function(done) {
-                    client.Taf(airport, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]('KSFO')
                 break;
 
             case 'TailOwner':
-                var ident = 'N415PW';
-                it('looks up owner by tail number ' + ident, function(done) {
-                    client.TailOwner(ident, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]('N415PW')
                 break;
 
             case 'ZipcodeInfo':
-                var zipcode = '95060';
-                it('looks up zipcode information for ' + zipcode, function(done) {
-                    client.ZipcodeInfo(zipcode, function(err, result) {
-                        expect(err).to.be.null;
-                        expect(result).to.not.be.null;
-                        done();
-                    });
-                });
+                tests[test]('95060')
                 break;
 
             default:
-                console.log("Unimplemented API test:", tests[i]);
+                console.log("Unimplemented API test:", test);
                 break;
         }
     });
